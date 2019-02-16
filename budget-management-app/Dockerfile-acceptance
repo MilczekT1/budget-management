@@ -1,0 +1,22 @@
+FROM konradboniecki/budget:java-base-image-290
+
+WORKDIR	/tests
+COPY target/cucumber-tests.jar ./tests.jar
+COPY "target/acceptance-tests-lib/*" "/classpath/"
+COPY "src/test/resources/pl/konradboniecki/budget/budgetmanagement/cucumber" "/features/"
+ENV JAVA_TOOL_OPTIONS \
+    "-Dspring.config.import=configserver:http://config-server:8888" \
+    "-Dspring.cloud.config.username=${CONFIG_SERVER_BA_USERNAME}" \
+    "-Dspring.cloud.config.password=${CONFIG_SERVER_BA_PASSWORD}"
+ENV CUCUMBER_OPTIONS  \
+    "--plugin pretty" \
+    "--plugin html:/tmp/artifacts/html" \
+    "--plugin junit:/tmp/artifacts/report.xml" \
+    "--plugin json:/tmp/artifacts/report.json"
+ENTRYPOINT [ \
+    "java", "-Djava.security.egd=file:/dev/./urandom", \
+    "-Dspring.profiles.active=acceptance-tests", \
+    "-Dencrypt.key=${CONFIG_ENCRYPT_KEY}", \
+    "-classpath", "/classpath/*:/features/*:tests.jar", \
+    "io.cucumber.core.cli.Main", \
+    "--glue", "pl.konradboniecki.budget.budgetmanagement.cucumber", "/features"]

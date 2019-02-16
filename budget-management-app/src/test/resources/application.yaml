@@ -1,0 +1,18 @@
+budget:
+  chassis:
+    http-logging:
+      enabled: true
+spring:
+  main:
+    lazy-initialization: true
+  profiles:
+    active: test
+  cloud:
+    config:
+      enabled: false
+  zipkin:
+    enabled: false
+  security:
+    user:
+      name: "testUserName"
+      password: "testUserPassword"

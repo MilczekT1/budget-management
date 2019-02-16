@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>pl.konradboniecki</groupId>
+        <artifactId>chassis-settings</artifactId>
+        <version>0.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>pl.konradboniecki.budget</groupId>
+    <artifactId>budget-management-pom</artifactId>
+    <version>0.7.0</version>
+
+    <packaging>pom</packaging>
+
+    <properties>
+        <sonar.organization>milczekt1</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>MilczekT1_budget-management</sonar.projectKey>
+        <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
+    </properties>
+
+    <modules>
+        <module>budget-management-api</module>
+        <module>budget-management-app</module>
+    </modules>
+</project>

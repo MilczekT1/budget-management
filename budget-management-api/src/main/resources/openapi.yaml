@@ -1,0 +1,704 @@
+openapi: 3.0.1
+info:
+  title: Budget Management
+  description: 'Api exposed by budget management service'
+  version: 0.0.3
+externalDocs:
+  description: Go to source Code
+  url: https://bitbucket.org/konradboniecki/budget-management/src/master/
+servers:
+  - url: http://localhost:8080/api/budget-mgt/v1
+  - url: https://konradboniecki.com.pl/api/budget-mgt/v1
+tags:
+  - name: Budget Management
+    description: Api for managing budgets.
+  - name: Expense Association
+    description: Api for assigning expenses.
+  - name: Jar Management
+    description: Api for jar management
+security:
+  - basicAuth: [ ]
+paths:
+  '/budgets':
+    post:
+      tags:
+        - Budget Management
+      summary: Create new budget.
+      operationId: createBudget
+      requestBody:
+        description: Properties for budget creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetCreation'
+        required: true
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedBudget'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  '/budgets/{budgetId}':
+    delete:
+      tags:
+        - Budget Management
+      summary: Delete budget.
+      operationId: deleteBudget
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+      responses:
+        '204':
+          description: Budget deleted.
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - Budget Management
+      summary: Find budget.
+      operationId: findBudget
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - in: query
+          name: idType
+          schema:
+            type: string
+            enum: [ id, family ]
+            default: "id"
+            maxLength: 36
+          required: false
+          description: Unique identifier of a budget in form of UUID.
+      responses:
+        '200':
+          description: Budget found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  '/budgets/{budgetId}/expenses':
+    post:
+      tags:
+        - Expense Association
+      summary: Create new expense in budget.
+      operationId: createExpense
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        description: Properties for expense creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseCreation'
+        required: true
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedExpense'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - Expense Association
+      summary: Find expenses in budget.
+      operationId: findExpenses
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Operation is successfull found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpensePage'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  '/budgets/{budgetId}/expenses/{expenseId}':
+    get:
+      tags:
+        - Expense Association
+      summary: Find expense in budget.
+      operationId: findExpense
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/ExpenseId'
+      responses:
+        '200':
+          description: Budget found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Expense Association
+      summary: Modify expense in budget.
+      operationId: modifyExpense
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/ExpenseId'
+      requestBody:
+        description: Properties for expense modification.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseModification'
+        required: true
+      responses:
+        '200':
+          description: Expense modified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Expense Association
+      summary: Delete expense from budget.
+      operationId: deleteExpense
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/ExpenseId'
+      responses:
+        '204':
+          description: Expense deleted.
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  '/budgets/{budgetId}/jars':
+    post:
+      tags:
+        - Jar Management
+      summary: Create new jar within a budget.
+      operationId: createJar
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        description: Properties for jar creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JarCreation'
+        required: true
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedJar'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - Jar Management
+      summary: Find jars in budget.
+      operationId: findJars
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Operation is successfull.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JarPage'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  '/budgets/{budgetId}/jars/{jarId}':
+    get:
+      tags:
+        - Jar Management
+      summary: Find expense in budget.
+      operationId: findJar
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/JarId'
+      responses:
+        '200':
+          description: Jar found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jar'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Jar Management
+      summary: Modify jar in budget.
+      operationId: modifyJar
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/JarId'
+      requestBody:
+        description: Properties for jar modification
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JarModification'
+        required: true
+      responses:
+        '200':
+          description: Jar modified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jar'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Jar Management
+      summary: Delete jar.
+      operationId: deleteJar
+      parameters:
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/JarId'
+      responses:
+        '204':
+          description: Jar deleted.
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    BudgetCreation:
+      type: object
+      required:
+        - familyId
+      properties:
+        familyId:
+          type: string
+          maxLength: 36
+          example: "465838ce-bc88-4c98-a3e8-ce3ef1559572"
+        maxJars:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 128
+          example: 6
+    CreatedBudget:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BudgetProperties'
+    Budget:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BudgetProperties'
+    BudgetProperties:
+      type: object
+      required:
+        - id
+        - familyId
+        - maxJars
+      properties:
+        id:
+          type: string
+          maxLength: 36
+          example: "dc1fd96a-2532-4a81-afbe-7f7b2245331e"
+        familyId:
+          type: string
+          maxLength: 36
+          example: "465838ce-bc88-4c98-a3e8-ce3ef1559572"
+        maxJars:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 128
+          example: 6
+    ExpenseCreation:
+      type: object
+      properties:
+        budgetId:
+          type: string
+          maxLength: 36
+          example: "13be890d-6021-4747-a081-3595e9827b5a"
+        amount:
+          type: number
+          format: double
+          example: 13.57
+        comment:
+          type: string
+          maxLength: 256
+          example: "kfc"
+    CreatedExpense:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ExpenseProperties'
+      properties:
+        comment:
+          type: string
+          maxLength: 256
+          example: "kfc"
+        created:
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+    ExpenseModification:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ExpenseProperties'
+      properties:
+        comment:
+          type: string
+          maxLength: 256
+          example: "kfc - hot wings"
+        created:
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+    Expense:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ExpenseProperties'
+      properties:
+        comment:
+          type: string
+          maxLength: 256
+          example: "kfc"
+        created:
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+    ExpenseProperties:
+      type: object
+      required:
+        - id
+        - budgetId
+        - amount
+      properties:
+        id:
+          type: string
+          maxLength: 36
+          example: "395aeb4d-65e4-429a-8786-617963b585af"
+        budgetId:
+          type: string
+          maxLength: 36
+          example: "13be890d-6021-4747-a081-3595e9827b5a"
+        amount:
+          type: number
+          format: double
+          example: 13.57
+    JarCreation:
+      type: object
+      required:
+        - budgetId
+      properties:
+        budgetId:
+          type: string
+          maxLength: 36
+          example: "465838ce-bc88-4c98-a3e8-ce3ef1559572"
+        jarName:
+          type: string
+          maxLength: 128
+          example: "Holidays"
+        currentAmount:
+          type: number
+          format: double
+          example: 10.50
+        capacity:
+          type: number
+          format: double
+          example: 10000
+    CreatedJar:
+      type: object
+      required:
+        - status
+      allOf:
+        - $ref: '#/components/schemas/JarProperties'
+      properties:
+        status:
+          $ref: '#/components/schemas/JarStatus'
+    JarModification:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/JarProperties'
+      properties:
+        status:
+          $ref: '#/components/schemas/JarStatus'
+    Jar:
+      type: object
+      required:
+        - status
+      allOf:
+        - $ref: '#/components/schemas/JarProperties'
+      properties:
+        status:
+          $ref: '#/components/schemas/JarStatus'
+    JarProperties:
+      type: object
+      required:
+        - id
+        - budgetId
+        - jarName
+        - currentAmount
+        - capacity
+      properties:
+        id:
+          type: string
+          maxLength: 36
+          example: "395aeb4d-65e4-429a-8786-617963b585af"
+        budgetId:
+          type: string
+          maxLength: 36
+          example: "465838ce-bc88-4c98-a3e8-ce3ef1559572"
+        jarName:
+          type: string
+          maxLength: 128
+          example: "Holidays"
+        currentAmount:
+          type: number
+          format: double
+          example: 0
+        capacity:
+          type: number
+          format: double
+          example: 10000
+    JarStatus:
+      type: string
+      pattern: "NOT STARTED|IN PROGRESS|COMPLETED"
+      #due to issues with deserialization
+      #enum: [ "NOT STARTED", "IN PROGRESS", "COMPLETED" ]
+      example: "NOT STARTED"
+    JarPage:
+      type: object
+      title: JarPage
+      description: A page of jars.
+      properties:
+        items:
+          type: array
+          description: Jar item
+          items:
+            $ref: '#/components/schemas/Jar'
+        _meta:
+          $ref: '#/components/schemas/PaginationMetadata'
+    ExpensePage:
+      type: object
+      title: ExpensePage
+      description: A page of expenses.
+      properties:
+        items:
+          type: array
+          description: Expense item
+          items:
+            $ref: '#/components/schemas/Expense'
+        _meta:
+          $ref: '#/components/schemas/PaginationMetadata'
+    PaginationMetadata:
+      title: PaginationMetadata
+      description: lList of metadata associated to the collection
+      type: object
+      properties:
+        elements:
+          description: Number of elements on page.
+          type: integer
+          format: int32
+          readOnly: true
+        pageSize:
+          description: Maximum amount of items on page.
+          type: integer
+          format: int32
+          readOnly: true
+        page:
+          description: Number of page. First page is 0.
+          type: integer
+          format: int32
+          readOnly: true
+        totalPages:
+          description: Total amount of pages.
+          type: integer
+          format: int32
+          readOnly: true
+        totalElements:
+          description: Total amount of pages.
+          type: integer
+          format: int32
+          readOnly: true
+    ErrorDescription:
+      title: ErrorDescription
+      description: |
+        [RFC 7807](https://tools.ietf.org/html/rfc7807) Problem Details for HTTP
+      type: object
+      required:
+        - status
+        - title
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: |
+            The HTTTP response status code
+        title:
+          type: string
+          format: int32
+          description: |
+            Summary of problem type
+          maxLength: 4096
+        type:
+          type: string
+          description: |
+            An URI reference [RFC3986] that identifies the problem type.
+          maxLength: 4096
+        detail:
+          type: string
+          description: |
+            Explanation specific to this occurence of the problem.
+          maxLength: 4096
+        instance:
+          type: string
+          description: |
+            An URI reference that identifies the specific ocurrence of the problem.
+          maxLength: 4096
+  responses:
+    ResourceNotFoundError:
+      description: |
+        Resource or subresource is not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDescription'
+          examples:
+            response:
+              value:
+                status: 404
+                title: Resource not found
+                type: ResourceNotFound
+                details: Resource of subresource not found.
+    BadRequestError:
+      description: |
+        The server cannot or will not process the request due to an apparent client error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDescription'
+          examples:
+            response:
+              value:
+                status: 400
+                title: Bad Request
+                type: InvalidRequest
+                details: Invalid request.
+    InternalServerError:
+      description: |
+        Server encountered an unexpected condition that prevented it from fulfilling the request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDescription'
+          examples:
+            response:
+              value:
+                status: 500
+                title: Internal Server Error
+                type: UnexpectedError
+                details: Unexpected error occurred.
+  parameters:
+    BudgetId:
+      name: budgetId
+      in: path
+      description: Unique identifier of a budget in form of UUID.
+      required: true
+      schema:
+        type: string
+        maxLength: 36
+    ExpenseId:
+      name: expenseId
+      in: path
+      description: Unique identifier of an expense in form of UUID.
+      required: true
+      schema:
+        type: string
+        maxLength: 36
+    JarId:
+      name: jarId
+      in: path
+      description: Unique identifier of a jar in form of UUID.
+      required: true
+      schema:
+        type: string
+        maxLength: 36
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 100
+      description: "The limit parameter controls the maximum number of items that may be returned for a single request. Default value is 100."
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+      description: "The page parameter controls the starting page. Default value is 0 and first element is also 0."

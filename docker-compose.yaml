@@ -1,0 +1,18 @@
+version: '2.1'
+services:
+  config-server:
+    container_name: config-server
+    image: konradboniecki/budget:config-server-0.5.0-SNAPSHOT-332
+    ports:
+      - "8888:8888"
+  budget-management-tests:
+    container_name: budget-management-tests
+    image: "konradboniecki/budget:${TAG}"
+    environment:
+      - BASE_URL=https://konradboniecki.com.pl
+      - CONFIG_ENCRYPT_KEY=${CONFIG_ENCRYPT_KEY}
+      - CONFIG_SERVER_BA_USERNAME=${CONFIG_SERVER_BA_USERNAME}
+      - CONFIG_SERVER_BA_PASSWORD=${CONFIG_SERVER_BA_PASSWORD}
+    depends_on:
+      config-server:
+        condition: service_healthy

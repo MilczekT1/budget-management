@@ -1,0 +1,128 @@
+deployment_branch_filter: &deployment_branch_filter
+  filters:
+    branches:
+      only:
+        - develop
+        - master
+        - /feature.*/
+        - /bugfix.*/
+docker_java_11: &docker_java_11
+  docker:
+    - image: cimg/openjdk:11.0.8-node
+  environment:
+    JVM_OPTS: -Xmx3200m
+    TERM: dumb
+orbs:
+  pipeline-template: milczek/pipeline-template@0.1.4
+version: 2.1
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build:
+          context: SonarCloud
+      - approve_deployment:
+          type: approval
+          requires:
+            - build
+          <<: *deployment_branch_filter
+      - pipeline-template/deploy_microservice:
+          serviceName: "budget-management"
+          requires:
+            - approve_deployment
+      - acceptance-tests-approval:
+          type: approval
+          requires:
+            - build
+      - pipeline-template/run_acceptance_tests:
+          sharedWorkspacePath: "shared_workspace"
+          requires:
+            - acceptance-tests-approval
+      - deploy-to-nexus-approval:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - deploy-to-nexus:
+          requires:
+            - deploy-to-nexus-approval
+jobs:
+  build:
+    <<: *docker_java_11
+    working_directory: ~/repo
+    steps:
+      - setup_remote_docker:
+          version: 20.10.12
+          docker_layer_caching: true
+      - add_ssh_keys:
+          fingerprints:
+            - "5f:9d:14:91:16:7c:39:92:67:55:6d:78:65:7e:f4:64"
+      - checkout
+      - restore_cache:
+          keys:
+            - m2-{{ checksum "pom.xml" }}
+      - run:
+          name: Build and run tests
+          command: |
+            mvn clean install -s .circleci/settings.xml -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: m2-{{ checksum "pom.xml" }}
+      - run:
+          name: Build and push docker image
+          command: |
+            cd budget-management-app || exit
+            VERSION=$(mvn -s ../.circleci/settings.xml  help:evaluate -Dexpression=project.version -q -DforceStdout)
+            TAG=$CIRCLE_PROJECT_REPONAME-$VERSION-$CIRCLE_BUILD_NUM-PR
+            if [ "$CIRCLE_BRANCH" == "master" ]; then
+              TAG=$CIRCLE_PROJECT_REPONAME-$VERSION
+            fi
+            if [ "$CIRCLE_BRANCH" == "develop" ]; then
+              TAG=$CIRCLE_PROJECT_REPONAME-$VERSION-$CIRCLE_BUILD_NUM
+            fi
+
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker build -t konradboniecki/budget:$TAG . --build-arg ARTIFACT=budget-management-$VERSION.jar
+            docker build -t konradboniecki/budget:$TAG-tests -f Dockerfile-acceptance .
+            docker push konradboniecki/budget:$TAG
+            docker push konradboniecki/budget:$TAG-tests
+
+            cd .. && mkdir shared_workspace
+            cp docker-compose.yaml shared_workspace/docker-compose.yaml
+            touch shared_workspace/tag.txt
+            touch shared_workspace/tag-tests.txt
+            echo $TAG > shared_workspace/tag.txt
+            echo $TAG-tests > shared_workspace/tag-tests.txt
+
+      - store_test_results:
+          path: budget-management-app/target/surefire-reports
+      - store_test_results:
+          path: budget-management-app/target/cucumber
+      - store_artifacts:
+          path: budget-management-app/target/surefire-reports/surefire-report.html
+      - store_artifacts:
+          path: budget-management-app/target/site/jacoco/
+      - store_artifacts:
+          path: budget-management-app/target/surefire-reports
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - shared_workspace
+
+  deploy-to-nexus:
+    <<: *docker_java_11
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - m2-{{ checksum "pom.xml" }}
+      - run:
+          name: Deploy artifacts to nexus
+          command: |
+            mvn deploy -s .circleci/settings.xml -DskipTests=true
