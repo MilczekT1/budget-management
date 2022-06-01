@@ -6,6 +6,12 @@ deployment_branch_filter: &deployment_branch_filter
         - master
         - /feature.*/
         - /bugfix.*/
+test_branch_filter: &test_branch_filter
+  filters:
+    branches:
+      only:
+        - /feature.*/
+        - /bugfix.*/
 docker_java_11: &docker_java_11
   docker:
     - image: cimg/openjdk:11.0.8-node
@@ -34,6 +40,7 @@ workflows:
           type: approval
           requires:
             - build
+          <<: *test_branch_filter
       - pipeline-template/run_acceptance_tests:
           sharedWorkspacePath: "shared_workspace"
           requires:
@@ -73,6 +80,9 @@ jobs:
           paths:
             - ~/.m2
           key: m2-{{ checksum "pom.xml" }}
+      - run:
+          name: Analyze on SonarCloud
+          command: mvn verify sonar:sonar -s .circleci/settings.xml
       - run:
           name: Build and push docker image
           command: |
