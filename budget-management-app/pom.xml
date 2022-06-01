@@ -12,7 +12,7 @@
 
     <groupId>pl.konradboniecki.budget</groupId>
     <artifactId>budget-management</artifactId>
-    <version>0.7.1</version>
+    <version>0.8.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -93,7 +93,7 @@
                     <testMode>EXPLICIT</testMode>
                     <contractsMode>REMOTE</contractsMode>
                     <contractsPath>pl/konradboniecki/budget/${project.artifactId}/${project.version}</contractsPath>
-                    <contractsRepositoryUrl>http://161.97.176.83:5001/repository/maven-public</contractsRepositoryUrl>
+                    <contractsRepositoryUrl>http://${env.NEXUS_ADDRESS}/repository/maven-public</contractsRepositoryUrl>
                     <basePackageForTests>pl.konradboniecki.budget.budgetmanagement</basePackageForTests>
                     <baseClassMappings>
                         <baseClassMapping><!--MVC client mapping-->
