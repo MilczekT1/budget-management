@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle;
 class ExpenseTest {
 
     @Test
-    public void merge_populates_all_properties_if_not_null() {
+    void merge_populates_all_properties_if_not_null() {
         // Given:
         Expense expense = new Expense()
                 .setId(UUID.randomUUID().toString())
@@ -42,7 +42,7 @@ class ExpenseTest {
     }
 
     @Test
-    public void merge_does_not_populate_properties_if_null() {
+    void merge_does_not_populate_properties_if_null() {
         // Given:
         String budgetId = UUID.randomUUID().toString();
         String jarId = UUID.randomUUID().toString();
@@ -65,7 +65,7 @@ class ExpenseTest {
     }
 
     @Test
-    public void when_merge_with_null_then_throw_npe() {
+    void when_merge_with_null_then_throw_npe() {
         // When:
         Throwable npe = catchThrowable(() -> new Expense().mergeWith(null));
         // Then:

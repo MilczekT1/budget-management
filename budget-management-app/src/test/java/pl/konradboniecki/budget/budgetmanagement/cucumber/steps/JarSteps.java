@@ -12,7 +12,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import pl.konradboniecki.budget.budgetmanagement.controller.JarController;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.commons.SharedData;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.security.Security;
 import pl.konradboniecki.budget.budgetmanagement.feature.jar.JarMapper;
@@ -46,7 +45,7 @@ public class JarSteps {
                     .currentAmount(jar.getCurrentAmount());
             HttpEntity<OASJarCreation> entity = new HttpEntity<>(jarCreation, security.getSecurityHeaders());
             ResponseEntity<OASJar> responseEntity = testRestTemplate
-                    .exchange(JarController.BASE_PATH + "/budgets/{budgetId}/jars", HttpMethod.POST, entity, OASJar.class, jar.getBudgetId());
+                    .exchange("/api/budget-mgt/v1/budgets/{budgetId}/jars", HttpMethod.POST, entity, OASJar.class, jar.getBudgetId());
             assertThat(responseEntity.getBody()).isNotNull();
             OASJar savedJar = responseEntity.getBody();
             sharedData.setLastResponseEntity(responseEntity);
@@ -70,7 +69,7 @@ public class JarSteps {
         OASJar jar = sharedData.getJarNameToJarMap().getOrDefault(jarName, generateJar(whichBudget));
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
         ResponseEntity<OASJar> responseEntity = testRestTemplate
-                .exchange(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", HttpMethod.DELETE, entity, OASJar.class, jar.getBudgetId(), jar.getId());
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", HttpMethod.DELETE, entity, OASJar.class, jar.getBudgetId(), jar.getId());
         sharedData.setLastResponseEntity(responseEntity);
     }
 
@@ -102,7 +101,7 @@ public class JarSteps {
         OASJar jar = sharedData.getJarNameToJarMap().getOrDefault(jarName, generateJar(whichBudget));
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
         ResponseEntity<OASJar> responseEntity = testRestTemplate
-                .exchange(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", HttpMethod.GET, entity, OASJar.class, jar.getBudgetId(), jar.getId());
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", HttpMethod.GET, entity, OASJar.class, jar.getBudgetId(), jar.getId());
         sharedData.setLastResponseEntity(responseEntity);
     }
 
@@ -133,7 +132,7 @@ public class JarSteps {
         }
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
         ResponseEntity<OASJarPage> responseEntity = testRestTemplate
-                .exchange(JarController.BASE_PATH + "/budgets/{budgetId}/jars", HttpMethod.GET, entity, OASJarPage.class, budgetId);
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}/jars", HttpMethod.GET, entity, OASJarPage.class, budgetId);
         sharedData.setLastResponseEntity(responseEntity);
     }
 
@@ -142,7 +141,7 @@ public class JarSteps {
         responseStatusCodeEquals(HttpStatus.OK);
         OASJarPage jarList = (OASJarPage) sharedData.getLastResponseEntity().getBody();
         assertThat(jarList).isNotNull();
-        assertThat(jarList.getItems().size()).isEqualTo(0);
+        assertThat(jarList.getItems()).isEmpty();
     }
 
     @Then("jars are found")
@@ -150,7 +149,7 @@ public class JarSteps {
         responseStatusCodeEquals(HttpStatus.OK);
         OASJarPage jarList = (OASJarPage) sharedData.getLastResponseEntity().getBody();
         assertThat(jarList).isNotNull();
-        assertThat(jarList.getItems().size()).isGreaterThan(0);
+        assertThat(jarList.getItems()).isNotEmpty();
     }
 
     @When("I update jar with name (.+) by id from (my|random) budget with properties:$")
@@ -168,14 +167,14 @@ public class JarSteps {
                 .status(newJar.getStatus());
         HttpEntity<?> entity = new HttpEntity<>(jarModification, security.getSecurityHeaders());
         ResponseEntity<OASJar> responseEntity = testRestTemplate
-                .exchange(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", HttpMethod.PUT, entity, OASJar.class, budgetId, newJar.getId());
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", HttpMethod.PUT, entity, OASJar.class, budgetId, newJar.getId());
         sharedData.setLastResponseEntity(responseEntity);
     }
 
     @Then("response contains {int} jars")
     public void responseContainsJars(Integer amountOfJars) {
         OASJarPage jarList = (OASJarPage) sharedData.getLastResponseEntity().getBody();
-        assertThat(jarList.getItems().size()).isEqualTo(amountOfJars);
+        assertThat(jarList.getItems()).hasSize(amountOfJars);
     }
 
     private String myOrRandomBudgetId(String whichBudget) {

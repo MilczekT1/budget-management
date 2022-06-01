@@ -6,20 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.konradboniecki.budget.budgetmanagement.feature.jar.JarService;
 import pl.konradboniecki.budget.openapi.api.JarManagementApi;
 import pl.konradboniecki.budget.openapi.dto.model.*;
 
-import static pl.konradboniecki.budget.budgetmanagement.controller.JarController.BASE_PATH;
-
 @AllArgsConstructor
 @RestController
-@RequestMapping(BASE_PATH)
 public class JarController implements JarManagementApi {
-    public static final String BASE_PATH = "/api/budget-mgt/v1";
-
     private final JarService jarService;
 
     @Override

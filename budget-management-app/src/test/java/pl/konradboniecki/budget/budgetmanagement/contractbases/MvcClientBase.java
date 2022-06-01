@@ -73,10 +73,10 @@ public abstract class MvcClientBase {
         when(budgetRepository.findById(budgetIdWithJar))
                 .thenReturn(Optional.of(new Budget().setId(budgetIdWithJar)));
 
-        when(jarRepository.deleteJarByIdAndBudgetId(eq(deletedJarId), eq(budgetIdWithJar)))
+        when(jarRepository.deleteJarByIdAndBudgetId(deletedJarId, budgetIdWithJar))
                 .thenReturn(1L);
 
-        when(jarRepository.deleteJarByIdAndBudgetId(eq(absentJarId), eq(budgetIdWithoutJars)))
+        when(jarRepository.deleteJarByIdAndBudgetId(absentJarId, budgetIdWithoutJars))
                 .thenReturn(0L);
     }
     private void mock_jar_save() {
@@ -112,9 +112,9 @@ public abstract class MvcClientBase {
                 .setJarName("modifiedName")
                 .setCapacity(5.0)
                 .setCurrentAmount(4.0);
-        when(jarRepository.findByIdAndBudgetId(eq(updatedJarId), eq(budgetId)))
+        when(jarRepository.findByIdAndBudgetId(updatedJarId, budgetId))
                 .thenReturn(Optional.of(jarBeforeModification));
-        when(jarRepository.findByIdAndBudgetId(eq(missingJarId), eq(budgetIdWithoutJars)))
+        when(jarRepository.findByIdAndBudgetId(missingJarId, budgetIdWithoutJars))
                 .thenReturn(Optional.empty());
         when(jarRepository.save(jarAfterModification)).thenReturn(jarAfterModification);
     }
@@ -128,7 +128,7 @@ public abstract class MvcClientBase {
                 .setCapacity(3.0)
                 .setCurrentAmount(2.0)
                 .setJarName("foundJar");
-        when(jarRepository.findByIdAndBudgetId(eq(foundJarId), eq(budgetId)))
+        when(jarRepository.findByIdAndBudgetId(foundJarId, budgetId))
                 .thenReturn(Optional.of(jarToFind));
         when(jarRepository.findByIdAndBudgetId(eq(missingJarId), any()))
                 .thenReturn(Optional.empty());
@@ -169,9 +169,9 @@ public abstract class MvcClientBase {
                 .setId("cee8d4bd-e787-4912-91ed-57400cf90892")
                 .setFamilyId(familyId)
                 .setMaxJars(6L);
-        when(budgetRepository.findByFamilyId(eq(familyId)))
+        when(budgetRepository.findByFamilyId(familyId))
                 .thenReturn(Optional.of(foundBudget));
-        when(budgetRepository.findByFamilyId(eq(missingFamilyId)))
+        when(budgetRepository.findByFamilyId(missingFamilyId))
                 .thenReturn(Optional.empty());
     }
     private void mock_budget_save() {
@@ -199,11 +199,11 @@ public abstract class MvcClientBase {
                 .thenReturn(Optional.of(new Budget().setId(budgetId)));
 
         doNothing().when(expenseRepository)
-                .deleteByIdAndBudgetId(eq(deletedExpenseId), eq(budgetId));
-        when(expenseRepository.findByIdAndBudgetId(eq(deletedExpenseId), eq(budgetId)))
+                .deleteByIdAndBudgetId(deletedExpenseId, budgetId);
+        when(expenseRepository.findByIdAndBudgetId(deletedExpenseId, budgetId))
                 .thenReturn(Optional.of(new Expense()));
 
-        when(expenseRepository.findByIdAndBudgetId(eq(missingExpenseId), eq(budgetId)))
+        when(expenseRepository.findByIdAndBudgetId(missingExpenseId, budgetId))
                 .thenReturn(Optional.empty());
     }
     private void mock_expense_save() {
@@ -220,7 +220,7 @@ public abstract class MvcClientBase {
                 .setCreated(Instant.now());
         when(expenseRepository.save(refEq(expenseToSave, "id", "created")))
                 .thenReturn(savedExpense);
-        when(budgetRepository.findById(eq(budgetId))).thenReturn(Optional.of(new Budget()));
+        when(budgetRepository.findById(budgetId)).thenReturn(Optional.of(new Budget()));
     }
     private void mock_expense_find_all() {
         String budgetId = "613c436d-ca18-4f31-9088-90efb19efd54";
@@ -249,7 +249,7 @@ public abstract class MvcClientBase {
         when(budgetRepository.findById(budgetIdWithoutExpenses))
                 .thenReturn(Optional.of(new Budget().setId(budgetIdWithoutExpenses)));
 
-        when(expenseRepository.findAllByBudgetId(eq(budgetId), eq(pageable)))
+        when(expenseRepository.findAllByBudgetId(budgetId, pageable))
                 .thenReturn(page);
         when(expenseRepository.findAllByBudgetId(budgetIdWithoutExpenses, pageable)).thenReturn(emptyPage);
     }
