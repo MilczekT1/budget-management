@@ -14,7 +14,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
                 "spring.main.lazy-initialization=true"
         })
 @CucumberContextConfiguration
-public class SpringIntegrationTest {
+public class SpringIntegrationTestConfiguration {
 
     @LocalServerPort
     int localServerPort;

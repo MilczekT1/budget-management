@@ -2,7 +2,6 @@ package pl.konradboniecki.budget.budgetmanagement.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -57,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = "spring.cloud.config.enabled=false"
 )
 @AutoConfigureMockMvc
-public class ExpenseControllerTests {
+class ExpenseControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -73,7 +72,7 @@ public class ExpenseControllerTests {
     private String basicAuthHeaderValue;
 
     @BeforeAll
-    public void createBasicAuthHeader() {
+    void createBasicAuthHeader() {
         basicAuthHeaderValue = chassisSecurityBasicAuthHelper.getBasicAuthHeaderValue();
     }
 
@@ -81,7 +80,7 @@ public class ExpenseControllerTests {
     class GET_Api_Budgets_Id_Expenses_Id {
         // GET /api/budget-mgt/v1/budgets/{id}/expenses/{expenseId}
         @Test
-        public void when_expense_not_found_then_response_is_correct() throws Exception {
+        void when_expense_not_found_then_response_is_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -91,7 +90,7 @@ public class ExpenseControllerTests {
                     .thenReturn(Optional.of(new Budget().setId(budgetId)));
             // Then:
             mockMvc.perform(
-                    get(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
+                            get("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
                             .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isNotFound())
@@ -101,7 +100,7 @@ public class ExpenseControllerTests {
         }
 
         @Test
-        public void when_expense_found_then_response_status_and_headers_are_correct() throws Exception {
+        void when_expense_found_then_response_status_and_headers_are_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -116,7 +115,7 @@ public class ExpenseControllerTests {
                     .thenReturn(Optional.of(new Budget().setId(budgetId)));
             // Then:
             mockMvc.perform(
-                    get(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
+                            get("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
                             .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isOk())
@@ -126,9 +125,9 @@ public class ExpenseControllerTests {
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomUUID = UUID.randomUUID().toString();
-            mockMvc.perform(get(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", randomUUID, randomUUID))
+            mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", randomUUID, randomUUID))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -137,7 +136,7 @@ public class ExpenseControllerTests {
     class GET_Api_Budgets_Id_Expenses {
         // GET /api/budget-mgt/v1/budgets/{id}/expenses
         @Test
-        public void when_expenses_found_with_default_params_then_response_is_correct() throws Exception {
+        void when_expenses_found_with_default_params_then_response_is_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             Expense firstExpense = new Expense()
@@ -164,8 +163,8 @@ public class ExpenseControllerTests {
             when(expenseRepository.findAllByBudgetId(eq(budgetId), any(Pageable.class)))
                     .thenReturn(page);
             // Then:
-            MvcResult mvcResult = mockMvc.perform(get(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses", budgetId)
-                    .header("Authorization", basicAuthHeaderValue))
+            MvcResult mvcResult = mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/expenses", budgetId)
+                            .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -176,7 +175,7 @@ public class ExpenseControllerTests {
         }
 
         @Test
-        public void when_expenses_found_with_limit_1_then_1_expense_is_visible() throws Exception {
+        void when_expenses_found_with_limit_1_then_1_expense_is_visible() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             Expense firstExpense = new Expense()
@@ -195,8 +194,8 @@ public class ExpenseControllerTests {
             when(expenseRepository.findAllByBudgetId(eq(budgetId), any(Pageable.class)))
                     .thenReturn(page);
             // Then:
-            MvcResult mvcResult = mockMvc.perform(get(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses?limit=1", budgetId)
-                    .header("Authorization", basicAuthHeaderValue))
+            MvcResult mvcResult = mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/expenses?limit=1", budgetId)
+                            .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -211,7 +210,7 @@ public class ExpenseControllerTests {
         }
 
         @Test
-        public void when_expenses_found_with_page_1_then_pagination_metadata_is_correct() throws Exception {
+        void when_expenses_found_with_page_1_then_pagination_metadata_is_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             Expense firstExpense = new Expense()
@@ -229,8 +228,8 @@ public class ExpenseControllerTests {
             when(expenseRepository.findAllByBudgetId(eq(budgetId), any(Pageable.class)))
                     .thenReturn(page);
             // Then:
-            MvcResult mvcResult = mockMvc.perform(get(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses?page=1", budgetId)
-                    .header("Authorization", basicAuthHeaderValue))
+            MvcResult mvcResult = mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/expenses?page=1", budgetId)
+                            .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -246,9 +245,9 @@ public class ExpenseControllerTests {
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomUUID = UUID.randomUUID().toString();
-            mockMvc.perform(get(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses", randomUUID))
+            mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/expenses", randomUUID))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -257,7 +256,7 @@ public class ExpenseControllerTests {
     class POST_Api_Budgets_Id_Expenses {
         // POST /api/budget-mgt/v1/budgets/{budgetId}/expenses
         @Test
-        public void when_expense_is_created_then_response_status_and_headers_are_correct() throws Exception {
+        void when_expense_is_created_then_response_status_and_headers_are_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             OASExpenseCreation expenseCreation = new OASExpenseCreation()
@@ -269,21 +268,21 @@ public class ExpenseControllerTests {
                     .setId(UUID.randomUUID().toString());
             when(expenseRepository.save(any(Expense.class)))
                     .thenReturn(savedExpense);
-            when(budgetRepository.findById(eq(budgetId)))
+            when(budgetRepository.findById(budgetId))
                     .thenReturn(Optional.of(new Budget()));
             // Then:
-            mockMvc.perform(post(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses", budgetId)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", basicAuthHeaderValue)
-                    .content(new ObjectMapper().writeValueAsString(expenseCreation)))
+            mockMvc.perform(post("/api/budget-mgt/v1/budgets/{budgetId}/expenses", budgetId)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", basicAuthHeaderValue)
+                            .content(new ObjectMapper().writeValueAsString(expenseCreation)))
                     .andDo(print())
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
         @Test
-        public void when_budgetId_does_not_match_then_response_status_and_headers_are_ok() throws Exception {
+        void when_budgetId_does_not_match_then_response_status_and_headers_are_ok() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             Expense expenseInRequestBody = new Expense()
@@ -292,11 +291,11 @@ public class ExpenseControllerTests {
                     .setAmount(1.0);
 
             // Then:
-            mockMvc.perform(post(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses", budgetId)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", basicAuthHeaderValue)
-                    .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
+            mockMvc.perform(post("/api/budget-mgt/v1/budgets/{budgetId}/expenses", budgetId)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", basicAuthHeaderValue)
+                            .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -305,9 +304,9 @@ public class ExpenseControllerTests {
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomUUID = UUID.randomUUID().toString();
-            mockMvc.perform(post(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses", randomUUID, randomUUID))
+            mockMvc.perform(post("/api/budget-mgt/v1/budgets/{budgetId}/expenses", randomUUID, randomUUID))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -316,7 +315,7 @@ public class ExpenseControllerTests {
     class PUT_Api_Budgets_Id_Expenses_Id {
         // PUT /api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}
         @Test
-        public void when_expense_is_updated_then_response_is_ok() throws Exception {
+        void when_expense_is_updated_then_response_is_ok() throws Exception {
             // Given:
             String expenseId = UUID.randomUUID().toString();
             String budgetId = UUID.randomUUID().toString();
@@ -340,11 +339,11 @@ public class ExpenseControllerTests {
                     .thenReturn(Optional.of(new Budget().setId(budgetId)));
 
             // Then:
-            MvcResult mvcResult = mockMvc.perform(put(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", basicAuthHeaderValue)
-                    .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
+            MvcResult mvcResult = mockMvc.perform(put("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", basicAuthHeaderValue)
+                            .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -353,12 +352,12 @@ public class ExpenseControllerTests {
             String responseBody = mvcResult.getResponse().getContentAsString();
             Expense returnedExpense = new ObjectMapper().registerModule(new JavaTimeModule())
                     .readValue(responseBody, Expense.class);
-            Assertions.assertThat(returnedExpense).isNotNull();
-            Assertions.assertThat(returnedExpense).isEqualTo(mergedExpense);
+            assertThat(returnedExpense).isNotNull()
+                    .isEqualTo(mergedExpense);
         }
 
         @Test
-        public void when_expense_is_not_found_during_update_then_response_is_ok() throws Exception {
+        void when_expense_is_not_found_during_update_then_response_is_ok() throws Exception {
             // Given:
             String expenseId = UUID.randomUUID().toString();
             String budgetId = UUID.randomUUID().toString();
@@ -372,11 +371,11 @@ public class ExpenseControllerTests {
             when(budgetRepository.findById(budgetId))
                     .thenReturn(Optional.of(new Budget().setId(budgetId)));
             // Then:
-            MvcResult mvcResult = mockMvc.perform(put(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", basicAuthHeaderValue)
-                    .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
+            MvcResult mvcResult = mockMvc.perform(put("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", basicAuthHeaderValue)
+                            .content(new ObjectMapper().writeValueAsString(expenseInRequestBody)))
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -385,7 +384,7 @@ public class ExpenseControllerTests {
             String responseBody = mvcResult.getResponse().getContentAsString();
             ErrorDescription errorDescription = new ObjectMapper().registerModule(new JavaTimeModule())
                     .readValue(responseBody, ErrorDescription.class);
-            Assertions.assertThat(errorDescription).isNotNull();
+            assertThat(errorDescription).isNotNull();
             org.junit.jupiter.api.Assertions.assertAll(
                     () -> assertThat(errorDescription.getStatus()).isEqualTo(404),
                     () -> assertThat(errorDescription.getMessage()).isEqualTo("Expense with id: " + expenseId + " not found in budget with id: " + budgetId + "."),
@@ -395,9 +394,9 @@ public class ExpenseControllerTests {
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomUUID = UUID.randomUUID().toString();
-            mockMvc.perform(put(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", randomUUID, randomUUID))
+            mockMvc.perform(put("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", randomUUID, randomUUID))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -406,7 +405,7 @@ public class ExpenseControllerTests {
     class DELETE_Api_Budgets_Id_Expenses_Id {
         // DELETE /api/budget-mgt/v1/budgets/{budgetId}/expenses/{id}
         @Test
-        public void when_expense_found_during_deletion_then_response_is_correct() throws Exception {
+        void when_expense_found_during_deletion_then_response_is_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -416,13 +415,13 @@ public class ExpenseControllerTests {
                     .thenReturn(Optional.of(new Budget().setId(budgetId)));
 
             // Then:
-            mockMvc.perform(delete(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
-                    .header("Authorization", basicAuthHeaderValue))
+            mockMvc.perform(delete("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
+                            .header("Authorization", basicAuthHeaderValue))
                     .andExpect(status().isNoContent());
         }
 
         @Test
-        public void when_expense_not_found_during_deletion_then_response_is_correct() throws Exception {
+        void when_expense_not_found_during_deletion_then_response_is_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -432,8 +431,8 @@ public class ExpenseControllerTests {
                     .when(expenseRepository).deleteByIdAndBudgetId(expenseId, budgetId);
 
             // Then:
-            mockMvc.perform(delete(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
-                    .header("Authorization", basicAuthHeaderValue))
+            mockMvc.perform(delete("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", budgetId, expenseId)
+                            .header("Authorization", basicAuthHeaderValue))
                     .andExpect(status().isNotFound())
                     .andDo(print())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -441,9 +440,9 @@ public class ExpenseControllerTests {
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomUUID = UUID.randomUUID().toString();
-            mockMvc.perform(delete(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", randomUUID, randomUUID))
+            mockMvc.perform(delete("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", randomUUID, randomUUID))
                     .andExpect(status().isUnauthorized());
         }
     }

@@ -12,9 +12,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import pl.konradboniecki.budget.budgetmanagement.controller.BudgetController;
-import pl.konradboniecki.budget.budgetmanagement.controller.ExpenseController;
-import pl.konradboniecki.budget.budgetmanagement.controller.JarController;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.commons.SharedData;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.security.Security;
 import pl.konradboniecki.budget.budgetmanagement.feature.budget.Budget;
@@ -68,7 +65,7 @@ public class BudgetSteps {
     private void cleanExpense(String budgetId, String expenseId) {
         log.info("SCENARIO CLEANUP: Deleting expense from budget with ids: {}/{}", expenseId, budgetId);
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
-        ResponseEntity<Void> responseEntity = testRestTemplate.exchange(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}",
+        ResponseEntity<Void> responseEntity = testRestTemplate.exchange("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}",
                 HttpMethod.DELETE, entity, Void.class, budgetId, expenseId);
         log.info("SCENARIO CLEANUP: result {}", responseEntity.getStatusCodeValue());
         assertThat(responseEntity.getStatusCode())
@@ -78,7 +75,7 @@ public class BudgetSteps {
     private void cleanBudget(String budgetId) {
         log.info("SCENARIO CLEANUP: Deleting budget with id: {}", budgetId);
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
-        ResponseEntity<Void> responseEntity = testRestTemplate.exchange(BudgetController.BASE_PATH + "/budgets/{budgetId}", HttpMethod.DELETE, entity, Void.class, budgetId);
+        ResponseEntity<Void> responseEntity = testRestTemplate.exchange("/api/budget-mgt/v1/budgets/{budgetId}", HttpMethod.DELETE, entity, Void.class, budgetId);
         log.info("SCENARIO CLEANUP: result {}", responseEntity.getStatusCodeValue());
         assertThat(responseEntity.getStatusCode())
                 .isIn(HttpStatus.NO_CONTENT, HttpStatus.NOT_FOUND);
@@ -87,7 +84,7 @@ public class BudgetSteps {
     private void cleanJar(String budgetId, String jarId) {
         log.info("SCENARIO CLEANUP: Deleting jar from budget with ids: {}/{}", jarId, budgetId);
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
-        ResponseEntity<Void> responseEntity = testRestTemplate.exchange(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}",
+        ResponseEntity<Void> responseEntity = testRestTemplate.exchange("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}",
                 HttpMethod.DELETE, entity, Void.class, budgetId, jarId);
         log.info("SCENARIO CLEANUP: result {}", responseEntity.getStatusCodeValue());
         assertThat(responseEntity.getStatusCode())
@@ -105,7 +102,7 @@ public class BudgetSteps {
 
         HttpEntity<?> entity = new HttpEntity<>(budgetToSave, security.getSecurityHeaders());
         ResponseEntity<OASBudget> responseEntity = testRestTemplate
-                .exchange(BudgetController.BASE_PATH + "/budgets", HttpMethod.POST, entity, OASBudget.class);
+                .exchange("/api/budget-mgt/v1/budgets", HttpMethod.POST, entity, OASBudget.class);
         sharedData.setLastResponseEntity(responseEntity);
         assertThat(responseEntity.getBody()).isNotNull();
         sharedData.addBudgetIdToDelete(responseEntity.getBody().getId());
@@ -130,7 +127,7 @@ public class BudgetSteps {
                 .maxJars(6L);
         HttpEntity<?> entity = new HttpEntity<>(budgetToSave, security.getSecurityHeaders());
         ResponseEntity<?> responseEntity = testRestTemplate
-                .exchange(BudgetController.BASE_PATH + "/budgets", HttpMethod.POST, entity, OASBudget.class);
+                .exchange("/api/budget-mgt/v1/budgets", HttpMethod.POST, entity, OASBudget.class);
         sharedData.setLastResponseEntity(responseEntity);
         responseStatusCodeEquals(HttpStatus.CREATED);
 
@@ -147,7 +144,7 @@ public class BudgetSteps {
         if (bgt.getId() != null) {
             HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
             ResponseEntity<?> responseEntity = testRestTemplate
-                    .exchange(BudgetController.BASE_PATH + "/budgets/{budgetId}", HttpMethod.DELETE, entity, OASBudget.class, bgt.getId());
+                    .exchange("/api/budget-mgt/v1/budgets/{budgetId}", HttpMethod.DELETE, entity, OASBudget.class, bgt.getId());
             sharedData.setLastResponseEntity(responseEntity);
         }
     }
@@ -162,7 +159,7 @@ public class BudgetSteps {
         String familyId = sharedData.getFamilyIdForName(familyName);
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
         ResponseEntity<?> responseEntity = testRestTemplate
-                .exchange(BudgetController.BASE_PATH + "/budgets/" + familyId + "?idType=family", HttpMethod.GET, entity, OASBudget.class);
+                .exchange("/api/budget-mgt/v1/budgets/" + familyId + "?idType=family", HttpMethod.GET, entity, OASBudget.class);
         sharedData.setLastResponseEntity(responseEntity);
         responseStatusCodeEquals(HttpStatus.NOT_FOUND);
     }
@@ -180,7 +177,7 @@ public class BudgetSteps {
     private OASBudget findBudgetByFamilyId(String id) {
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
         ResponseEntity<?> responseEntity = testRestTemplate
-                .exchange(BudgetController.BASE_PATH + "/budgets/" + id + "?idType=family", HttpMethod.GET, entity, OASBudget.class);
+                .exchange("/api/budget-mgt/v1/budgets/" + id + "?idType=family", HttpMethod.GET, entity, OASBudget.class);
         sharedData.setLastResponseEntity(responseEntity);
         return (OASBudget) responseEntity.getBody();
     }
@@ -194,7 +191,7 @@ public class BudgetSteps {
     private OASBudget findBudgetById(String id) {
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
         ResponseEntity<?> responseEntity = testRestTemplate
-                .exchange(BudgetController.BASE_PATH + "/budgets/{budgetId}", HttpMethod.GET, entity, OASBudget.class, id);
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}", HttpMethod.GET, entity, OASBudget.class, id);
         sharedData.setLastResponseEntity(responseEntity);
         return (OASBudget) responseEntity.getBody();
     }
@@ -212,7 +209,7 @@ public class BudgetSteps {
 
         HttpEntity<?> entity = new HttpEntity<>(budgetToSave, security.getSecurityHeaders());
         ResponseEntity<OASBudget> responseEntity = testRestTemplate
-                .exchange(BudgetController.BASE_PATH + "/budgets", HttpMethod.POST, entity, OASBudget.class);
+                .exchange("/api/budget-mgt/v1/budgets", HttpMethod.POST, entity, OASBudget.class);
         sharedData.setLastResponseEntity(responseEntity);
         assertThat(responseEntity.getBody()).isNotNull();
         sharedData.addBudgetIdToDelete(responseEntity.getBody().getId());
