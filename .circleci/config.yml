@@ -27,15 +27,11 @@ workflows:
     jobs:
       - build:
           context: SonarCloud
-      - approve_deployment:
-          type: approval
-          requires:
-            - build
-          <<: *deployment_branch_filter
       - pipeline-template/deploy_microservice:
           serviceName: "budget-management"
           requires:
-            - approve_deployment
+            - build
+          <<: *deployment_branch_filter
       - pipeline-template/run_acceptance_tests:
           sharedWorkspacePath: "shared_workspace"
           requires:
