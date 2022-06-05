@@ -2,8 +2,8 @@ deployment_branch_filter: &deployment_branch_filter
   filters:
     branches:
       only:
-        - develop
         - master
+        - develop
         - /feature.*/
         - /bugfix.*/
 test_branch_filter: &test_branch_filter
@@ -25,28 +25,20 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build:
+      - build
+      - sonar-scanning:
           context: SonarCloud
-      - approve_deployment:
-          type: approval
-          requires:
-            - build
-          <<: *deployment_branch_filter
       - pipeline-template/deploy_microservice:
           serviceName: "budget-management"
           requires:
-            - approve_deployment
-      - acceptance-tests-approval:
-          type: approval
-          requires:
             - build
-          <<: *test_branch_filter
+          <<: *deployment_branch_filter
       - pipeline-template/run_acceptance_tests:
           sharedWorkspacePath: "shared_workspace"
           requires:
-            - acceptance-tests-approval
-      - deploy-to-nexus-approval:
-          type: approval
+            - pipeline-template/deploy_microservice
+          <<: *test_branch_filter
+      - deploy-to-nexus:
           requires:
             - build
           filters:
@@ -54,9 +46,6 @@ workflows:
               only:
                 - master
                 - develop
-      - deploy-to-nexus:
-          requires:
-            - deploy-to-nexus-approval
 jobs:
   build:
     <<: *docker_java_11
@@ -80,9 +69,6 @@ jobs:
           paths:
             - ~/.m2
           key: m2-{{ checksum "pom.xml" }}
-      - run:
-          name: Analyze on SonarCloud
-          command: mvn verify sonar:sonar -s .circleci/settings.xml
       - run:
           name: Build and push docker image
           command: |
@@ -123,7 +109,17 @@ jobs:
           root: ~/repo
           paths:
             - shared_workspace
-
+  sonar-scanning:
+    <<: *docker_java_11
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - m2-{{ checksum "pom.xml" }}
+      - run:
+          name: Analyze on SonarCloud
+          command: mvn verify sonar:sonar -s .circleci/settings.xml
   deploy-to-nexus:
     <<: *docker_java_11
     working_directory: ~/repo

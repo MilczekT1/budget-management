@@ -1,4 +1,4 @@
-FROM konradboniecki/budget:java-base-image-290
+FROM konradboniecki/budget:java-base-image-latest
 
 WORKDIR	/tests
 COPY target/cucumber-tests.jar ./tests.jar

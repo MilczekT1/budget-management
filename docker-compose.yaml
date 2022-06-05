@@ -2,7 +2,7 @@ version: '2.1'
 services:
   config-server:
     container_name: config-server
-    image: konradboniecki/budget:config-server-0.5.0-SNAPSHOT-332
+    image: konradboniecki/budget:config-server-service-0.7.1
     ports:
       - "8888:8888"
   budget-management-tests:
