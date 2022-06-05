@@ -2,8 +2,8 @@ deployment_branch_filter: &deployment_branch_filter
   filters:
     branches:
       only:
-        - develop
         - master
+        - develop
         - /feature.*/
         - /bugfix.*/
 test_branch_filter: &test_branch_filter
@@ -36,15 +36,11 @@ workflows:
           serviceName: "budget-management"
           requires:
             - approve_deployment
-      - acceptance-tests-approval:
-          type: approval
-          requires:
-            - build
-          <<: *test_branch_filter
       - pipeline-template/run_acceptance_tests:
           sharedWorkspacePath: "shared_workspace"
           requires:
-            - acceptance-tests-approval
+            - pipeline-template/deploy_microservice
+          <<: *test_branch_filter
       - deploy-to-nexus-approval:
           type: approval
           requires:
