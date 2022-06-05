@@ -41,8 +41,7 @@ workflows:
           requires:
             - pipeline-template/deploy_microservice
           <<: *test_branch_filter
-      - deploy-to-nexus-approval:
-          type: approval
+      - deploy-to-nexus:
           requires:
             - build
           filters:
@@ -50,9 +49,6 @@ workflows:
               only:
                 - master
                 - develop
-      - deploy-to-nexus:
-          requires:
-            - deploy-to-nexus-approval
 jobs:
   build:
     <<: *docker_java_11
