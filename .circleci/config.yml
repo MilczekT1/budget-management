@@ -25,7 +25,8 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build:
+      - build
+      - sonar-scanning:
           context: SonarCloud
       - pipeline-template/deploy_microservice:
           serviceName: "budget-management"
@@ -69,9 +70,6 @@ jobs:
             - ~/.m2
           key: m2-{{ checksum "pom.xml" }}
       - run:
-          name: Analyze on SonarCloud
-          command: mvn verify sonar:sonar -s .circleci/settings.xml
-      - run:
           name: Build and push docker image
           command: |
             cd budget-management-app || exit
@@ -111,7 +109,17 @@ jobs:
           root: ~/repo
           paths:
             - shared_workspace
-
+  sonar-scanning:
+    <<: *docker_java_11
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - m2-{{ checksum "pom.xml" }}
+      - run:
+          name: Analyze on SonarCloud
+          command: mvn verify sonar:sonar -s .circleci/settings.xml
   deploy-to-nexus:
     <<: *docker_java_11
     working_directory: ~/repo
