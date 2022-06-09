@@ -6,19 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.konradboniecki.budget.budgetmanagement.feature.expense.ExpenseService;
 import pl.konradboniecki.budget.openapi.api.ExpenseAssociationApi;
 import pl.konradboniecki.budget.openapi.dto.model.*;
 
-import static pl.konradboniecki.budget.budgetmanagement.controller.ExpenseController.BASE_PATH;
-
 @AllArgsConstructor
 @RestController
-@RequestMapping(value = BASE_PATH)
 public class ExpenseController implements ExpenseAssociationApi {
-    public static final String BASE_PATH = "/api/budget-mgt/v1";
 
     private final ExpenseService expenseService;
 

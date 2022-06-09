@@ -20,7 +20,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
@@ -30,7 +29,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         webEnvironment = WebEnvironment.NONE,
         properties = "spring.cloud.config.enabled=false"
 )
-public class BudgetServiceTests {
+class BudgetServiceTests {
 
     @MockBean
     private BudgetRepository budgetRepository;
@@ -38,19 +37,19 @@ public class BudgetServiceTests {
     private BudgetService budgetService;
 
     @Test
-    public void given_findBy_id_when_budget_not_found_then_throw() {
+    void given_findBy_id_when_budget_not_found_then_throw() {
         // Given:
         String id = UUID.randomUUID().toString();
         when(budgetRepository.findById(id)).thenReturn(Optional.empty());
         // When:
         Throwable throwable = catchThrowable(() -> budgetService.findByOrThrow(id, "id"));
         // Then:
-        assertThat(throwable).isNotNull();
-        assertThat(throwable).isInstanceOf(BudgetNotFoundException.class);
+        assertThat(throwable).isNotNull()
+                .isInstanceOf(BudgetNotFoundException.class);
     }
 
     @Test
-    public void given_findBy_id_when_budget_found_then_return_budget() {
+    void given_findBy_id_when_budget_found_then_return_budget() {
         // Given:
         String id = UUID.randomUUID().toString();
         ;
@@ -64,7 +63,7 @@ public class BudgetServiceTests {
     }
 
     @Test
-    public void given_findBy_familyId_when_budget_found_then_return_budget() {
+    void given_findBy_familyId_when_budget_found_then_return_budget() {
         // Given:
         String familyId = UUID.randomUUID().toString();
         Budget bgt = new Budget().setFamilyId(familyId);
@@ -77,7 +76,7 @@ public class BudgetServiceTests {
     }
 
     @Test
-    public void given_findBy_familyId_when_budget_not_found_then_throw() {
+    void given_findBy_familyId_when_budget_not_found_then_throw() {
         // Given:
         String familyId = UUID.randomUUID().toString();
         when(budgetRepository.findByFamilyId(familyId))
@@ -85,23 +84,23 @@ public class BudgetServiceTests {
         // When:
         Throwable throwable = catchThrowable(() -> budgetService.findByOrThrow(String.valueOf(familyId), "family"));
         // Then:
-        assertThat(throwable).isNotNull();
-        assertThat(throwable).isInstanceOf(BudgetNotFoundException.class);
+        assertThat(throwable).isNotNull()
+                .isInstanceOf(BudgetNotFoundException.class);
     }
 
     @Test
-    public void when_findBy_invalid_IdType_then_throw() {
+    void when_findBy_invalid_IdType_then_throw() {
         // Given:
         String invalidIdType = "invalidIdType";
         // When:
         Throwable throwable = catchThrowable(() -> budgetService.findByOrThrow(String.valueOf(10L), invalidIdType));
         // Then:
-        assertThat(throwable).isNotNull();
-        assertThat(throwable).isInstanceOf(BadRequestException.class);
+        assertThat(throwable).isNotNull()
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test
-    public void given_save_budget_when_no_conflict_then_return_budget() {
+    void given_save_budget_when_no_conflict_then_return_budget() {
         // Given:
         String familyIdWithoutConflict = UUID.randomUUID().toString();
         Budget budgetWithoutConflict = new Budget()
@@ -113,7 +112,7 @@ public class BudgetServiceTests {
                 .maxJars(6L);
         when(budgetRepository.save(any(Budget.class)))
                 .thenReturn(budgetWithoutConflict);
-        when(budgetRepository.findByFamilyId(eq(familyIdWithoutConflict)))
+        when(budgetRepository.findByFamilyId(familyIdWithoutConflict))
                 .thenReturn(Optional.empty());
 
         // When:
@@ -124,7 +123,7 @@ public class BudgetServiceTests {
     }
 
     @Test
-    public void given_save_budget_when_conflict_then_throw() {
+    void given_save_budget_when_conflict_then_throw() {
         // Given:
         String familyIdWithConflict = UUID.randomUUID().toString();
         Budget budgetWithoutConflict = new Budget()
@@ -134,12 +133,12 @@ public class BudgetServiceTests {
         OASBudgetCreation budgetCreation = new OASBudgetCreation()
                 .familyId(familyIdWithConflict)
                 .maxJars(6L);
-        when(budgetRepository.findByFamilyId(eq(familyIdWithConflict)))
+        when(budgetRepository.findByFamilyId(familyIdWithConflict))
                 .thenReturn(Optional.of(budgetWithoutConflict));
         // When:
         Throwable throwable = catchThrowable(() -> budgetService.saveBudget(budgetCreation));
         // Then:
-        assertThat(throwable).isNotNull();
-        assertThat(throwable).isInstanceOf(FamilyConflictException.class);
+        assertThat(throwable).isNotNull()
+                .isInstanceOf(FamilyConflictException.class);
     }
 }

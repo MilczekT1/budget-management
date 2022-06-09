@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         properties = "spring.cloud.config.enabled=false"
 )
 @AutoConfigureMockMvc
-public class JarControllerTests {
+class JarControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -73,7 +73,7 @@ public class JarControllerTests {
     class GET_Api_Budgets_Id_Jars {
         // GET /api/budget-mgt/v1/budgets/{budgetId}/jars
         @Test
-        public void when_jars_are_found_then_response_status_and_headers_are_correct() throws Exception {
+        void when_jars_are_found_then_response_status_and_headers_are_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             Jar firstJar = new Jar()
@@ -96,17 +96,17 @@ public class JarControllerTests {
             when(jarRepository.findAllByBudgetId(budgetId, pageable))
                     .thenReturn(page);
             // Then:
-            mockMvc.perform(get(JarController.BASE_PATH + "/budgets/{budgetId}/jars", budgetId)
-                    .header("Authorization", basicAuthHeaderValue))
+            mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/jars", budgetId)
+                            .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomBudgetId = UUID.randomUUID().toString();
-            mockMvc.perform(get(JarController.BASE_PATH + "/budgets/{budgetId}/jars", randomBudgetId))
+            mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/jars", randomBudgetId))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -115,15 +115,15 @@ public class JarControllerTests {
     class GET_Api_Budgets_Id_Jars_Id {
         // GET /api/budget-mgt/v1/budgets/{budgetId}/jars/{id}
         @Test
-        public void when_jar_not_found_then_response_is_correct() throws Exception {
+        void when_jar_not_found_then_response_is_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
             when(jarRepository.findByIdAndBudgetId(jarId, budgetId))
                     .thenReturn(Optional.empty());
             // Then:
-            mockMvc.perform(get(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
-                    .header("Authorization", basicAuthHeaderValue))
+            mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
+                            .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -132,7 +132,7 @@ public class JarControllerTests {
         }
 
         @Test
-        public void when_jar_is_found_then_response_status_and_headers_are_correct() throws Exception {
+        void when_jar_is_found_then_response_status_and_headers_are_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
@@ -145,8 +145,8 @@ public class JarControllerTests {
             when(jarRepository.findByIdAndBudgetId(jarId, budgetId))
                     .thenReturn(Optional.of(mockedJar));
             // Then:
-            mockMvc.perform(get(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
-                    .header("Authorization", basicAuthHeaderValue))
+            mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
+                            .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -154,9 +154,9 @@ public class JarControllerTests {
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomBudgetId = UUID.randomUUID().toString();
-            mockMvc.perform(get(JarController.BASE_PATH + "/budgets/{budgetId}/jars/1", randomBudgetId))
+            mockMvc.perform(get("/api/budget-mgt/v1/budgets/{budgetId}/jars/1", randomBudgetId))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -165,7 +165,7 @@ public class JarControllerTests {
     class POST_Api_Budgets_Id_Jars {
         // POST /api/budget-mgt/v1/budgets/{budgetId}/jars
         @Test
-        public void when_jar_is_created_then_response_status_and_headers_are_correct() throws Exception {
+        void when_jar_is_created_then_response_status_and_headers_are_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             OASJarCreation jarCreation = new OASJarCreation()
@@ -180,18 +180,18 @@ public class JarControllerTests {
             when(budgetRepository.findById(budgetId))
                     .thenReturn(Optional.of(new Budget().setId(budgetId)));
             // Then:
-            mockMvc.perform(post(JarController.BASE_PATH + "/budgets/{budgetId}/jars", budgetId)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", basicAuthHeaderValue)
-                    .content(new ObjectMapper().writeValueAsString(jarCreation)))
+            mockMvc.perform(post("/api/budget-mgt/v1/budgets/{budgetId}/jars", budgetId)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", basicAuthHeaderValue)
+                            .content(new ObjectMapper().writeValueAsString(jarCreation)))
                     .andDo(print())
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
         @Test
-        public void when_budgetId_does_not_match_then_response_status_and_headers_are_ok() throws Exception {
+        void when_budgetId_does_not_match_then_response_status_and_headers_are_ok() throws Exception {
             // Given:
             String budgetIdFromBody = UUID.randomUUID().toString();
             String budgetIdFromPath = UUID.randomUUID().toString();
@@ -202,11 +202,11 @@ public class JarControllerTests {
                     .currentAmount(1.0);
 
             // Then:
-            mockMvc.perform(post(JarController.BASE_PATH + "/budgets/{budgetId}/jars", budgetIdFromPath)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", basicAuthHeaderValue)
-                    .content(new ObjectMapper().writeValueAsString(jarCreation)))
+            mockMvc.perform(post("/api/budget-mgt/v1/budgets/{budgetId}/jars", budgetIdFromPath)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", basicAuthHeaderValue)
+                            .content(new ObjectMapper().writeValueAsString(jarCreation)))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -214,9 +214,9 @@ public class JarControllerTests {
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomBudgetId = UUID.randomUUID().toString();
-            mockMvc.perform(post(JarController.BASE_PATH + "/budgets/{budgetId}/jars", randomBudgetId))
+            mockMvc.perform(post("/api/budget-mgt/v1/budgets/{budgetId}/jars", randomBudgetId))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -225,7 +225,7 @@ public class JarControllerTests {
     class PUT_Api_Budgets_Id_Jars_Id {
         // PUT /api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}
         @Test
-        public void when_jar_is_updated_then_response_is_ok() throws Exception {
+        void when_jar_is_updated_then_response_is_ok() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
@@ -250,7 +250,7 @@ public class JarControllerTests {
 
             // Then:
             mockMvc.perform(
-                    put(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
+                            put("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .header("Authorization", basicAuthHeaderValue)
@@ -261,7 +261,7 @@ public class JarControllerTests {
         }
 
         @Test
-        public void when_jar_is_not_found_during_update_then_response_is_ok() throws Exception {
+        void when_jar_is_not_found_during_update_then_response_is_ok() throws Exception {
             // Given:
             String jarId = UUID.randomUUID().toString();
             String budgetId = UUID.randomUUID().toString();
@@ -274,20 +274,20 @@ public class JarControllerTests {
             // When:
             when(jarRepository.findByIdAndBudgetId(jarId, budgetId)).thenReturn(Optional.empty());
             // Then:
-            mockMvc.perform(put(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", basicAuthHeaderValue)
-                    .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
+            mockMvc.perform(put("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header("Authorization", basicAuthHeaderValue)
+                            .content(new ObjectMapper().writeValueAsString(jarInRequestBody)))
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomBudgetId = UUID.randomUUID().toString();
-            mockMvc.perform(put(JarController.BASE_PATH + "/budgets/{budgetId}/jars/1", randomBudgetId))
+            mockMvc.perform(put("/api/budget-mgt/v1/budgets/{budgetId}/jars/1", randomBudgetId))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -296,7 +296,7 @@ public class JarControllerTests {
     class DELETE_Api_Budgets_Id_Jars_Id {
         // DELETE /api/budget-mgt/v1/budgets/{budgetId}/jars/{id}
         @Test
-        public void when_jar_found_during_deletion_then_response_is_correct() throws Exception {
+        void when_jar_found_during_deletion_then_response_is_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
@@ -307,13 +307,13 @@ public class JarControllerTests {
 
             // Then:
             mockMvc.perform(
-                    delete(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
+                            delete("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
                             .header("Authorization", basicAuthHeaderValue))
                     .andExpect(status().isNoContent());
         }
 
         @Test
-        public void when_jar_not_found_during_deletion_then_response_is_correct() throws Exception {
+        void when_jar_not_found_during_deletion_then_response_is_correct() throws Exception {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
@@ -324,7 +324,7 @@ public class JarControllerTests {
 
             // Then:
             mockMvc.perform(
-                    delete(JarController.BASE_PATH + "/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
+                            delete("/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}", budgetId, jarId)
                             .header("Authorization", basicAuthHeaderValue))
                     .andDo(print())
                     .andExpect(status().isNotFound())
@@ -333,9 +333,9 @@ public class JarControllerTests {
         }
 
         @Test
-        public void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
+        void whenBAHeaderIsMissingThenUnauthorized() throws Exception {
             String randomBudgetId = UUID.randomUUID().toString();
-            mockMvc.perform(delete(JarController.BASE_PATH + "/budgets/{budgetId}/jars/1", randomBudgetId))
+            mockMvc.perform(delete("/api/budget-mgt/v1/budgets/{budgetId}/jars/1", randomBudgetId))
                     .andExpect(status().isUnauthorized());
         }
     }
