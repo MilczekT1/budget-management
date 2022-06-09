@@ -7,10 +7,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class BudgetTests {
+class BudgetTests {
 
     @Test
-    public void default_maxJars_is_equal_to_6() {
+    void default_maxJars_is_equal_to_6() {
         // When:
         Budget bgt = new Budget();
         // Then:
