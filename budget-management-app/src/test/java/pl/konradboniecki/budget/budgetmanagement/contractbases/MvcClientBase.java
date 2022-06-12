@@ -130,7 +130,7 @@ public abstract class MvcClientBase {
                 .setJarName("foundJar");
         when(jarRepository.findByIdAndBudgetId(foundJarId, budgetId))
                 .thenReturn(Optional.of(jarToFind));
-        when(jarRepository.findByIdAndBudgetId(missingJarId, any()))
+        when(jarRepository.findByIdAndBudgetId(eq(missingJarId), any()))
                 .thenReturn(Optional.empty());
     }
     private void mock_jar_find_all() {
