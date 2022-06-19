@@ -36,7 +36,7 @@ public class JarService {
         if (jar.isPresent()) {
             return jar.get();
         } else {
-            throw new JarNotFoundException("Jar with id: " + id + " not found in budget with id: " + budgetId);
+            throw new JarNotFoundException(String.format("Jar with id: %s not found in budget with id: %s", id, budgetId));
         }
     }
 
@@ -62,7 +62,7 @@ public class JarService {
         budgetExistsOrThrow(budgetId, "Failed to delete jar. Budget not found.");
         Long deleted = jarRepository.deleteJarByIdAndBudgetId(jarId, budgetId);
         if (deleted == 0) {
-            throw new JarNotFoundException("Jar with id: " + jarId + " not found in budget with id: " + budgetId);
+            throw new JarNotFoundException(String.format("Jar with id: %s not found in budget with id: %s", jarId, budgetId));
         }
     }
 
@@ -70,7 +70,7 @@ public class JarService {
         try {
             jarRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new JarNotFoundException("Jar with id: " + id + " not found.");
+            throw new JarNotFoundException(String.format("Jar with id: %s not found.", id));
         }
     }
 

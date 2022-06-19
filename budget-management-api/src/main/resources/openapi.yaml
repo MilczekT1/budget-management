@@ -7,8 +7,8 @@ externalDocs:
   description: Go to source Code
   url: https://bitbucket.org/konradboniecki/budget-management/src/master/
 servers:
-  - url: http://localhost:8080/api/budget-mgt/v1
-  - url: https://konradboniecki.com.pl/api/budget-mgt/v1
+  - url: http://localhost:8080
+  - url: https://konradboniecki.com.pl
 tags:
   - name: Budget Management
     description: Api for managing budgets.
@@ -19,7 +19,7 @@ tags:
 security:
   - basicAuth: [ ]
 paths:
-  '/budgets':
+  '/api/budget-mgt/v1/budgets':
     post:
       tags:
         - Budget Management
@@ -43,7 +43,7 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  '/budgets/{budgetId}':
+  '/api/budget-mgt/v1/budgets/{budgetId}':
     delete:
       tags:
         - Budget Management
@@ -89,7 +89,7 @@ paths:
           $ref: '#/components/responses/ResourceNotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  '/budgets/{budgetId}/expenses':
+  '/api/budget-mgt/v1/budgets/{budgetId}/expenses':
     post:
       tags:
         - Expense Association
@@ -137,7 +137,7 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  '/budgets/{budgetId}/expenses/{expenseId}':
+  '/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}':
     get:
       tags:
         - Expense Association
@@ -204,7 +204,7 @@ paths:
           $ref: '#/components/responses/ResourceNotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  '/budgets/{budgetId}/jars':
+  '/api/budget-mgt/v1/budgets/{budgetId}/jars':
     post:
       tags:
         - Jar Management
@@ -252,7 +252,7 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  '/budgets/{budgetId}/jars/{jarId}':
+  '/api/budget-mgt/v1/budgets/{budgetId}/jars/{jarId}':
     get:
       tags:
         - Jar Management

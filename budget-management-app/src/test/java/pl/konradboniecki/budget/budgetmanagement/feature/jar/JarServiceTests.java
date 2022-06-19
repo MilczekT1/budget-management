@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
@@ -36,7 +35,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         webEnvironment = WebEnvironment.NONE,
         properties = "spring.cloud.config.enabled=false"
 )
-public class JarServiceTests {
+class JarServiceTests {
 
     @MockBean
     private JarRepository jarRepository;
@@ -49,7 +48,7 @@ public class JarServiceTests {
     @Nested
     class CreationTests {
         @Test
-        public void given_valid_params_when_save_then_return_jar() {
+        void given_valid_params_when_save_then_return_jar() {
             // Given:
             String consistentBudgetId = UUID.randomUUID().toString();
             OASJarCreation jarCreation = new OASJarCreation()
@@ -72,7 +71,7 @@ public class JarServiceTests {
         }
 
         @Test
-        public void given_different_budgetId_in_body_and_path_when_save_then_throw() {
+        void given_different_budgetId_in_body_and_path_when_save_then_throw() {
             // Given:
             String budgetIdFromJar = UUID.randomUUID().toString();
             String budgetIdFromBody = UUID.randomUUID().toString();
@@ -88,7 +87,7 @@ public class JarServiceTests {
     @Nested
     class ModificationTests {
         @Test
-        public void given_valid_params_when_update_then_return_updated_jar() {
+        void given_valid_params_when_update_then_return_updated_jar() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
@@ -118,7 +117,7 @@ public class JarServiceTests {
         }
 
         @Test
-        public void given_different_budgetId_in_body_and_path_when_update_then_throw() {
+        void given_different_budgetId_in_body_and_path_when_update_then_throw() {
             // Given:
             String budgetIdFromJar = UUID.randomUUID().toString();
             String budgetIdFromPath = UUID.randomUUID().toString();
@@ -136,7 +135,7 @@ public class JarServiceTests {
     @Nested
     class DeletionTests {
         @Test
-        public void given_deleteBy_id_when_jar_found_then_no_exception() {
+        void given_deleteBy_id_when_jar_found_then_no_exception() {
             // Given:
             String jarId = UUID.randomUUID().toString();
             doNothing().when(jarRepository).deleteById(jarId);
@@ -147,12 +146,12 @@ public class JarServiceTests {
         }
 
         @Test
-        public void given_deleteBy_id_when_jar_not_found_then_throw() {
+        void given_deleteBy_id_when_jar_not_found_then_throw() {
             // Given:
             String jarId = UUID.randomUUID().toString();
             doThrow(EmptyResultDataAccessException.class)
                     .when(jarRepository)
-                    .deleteById(eq(jarId));
+                    .deleteById(jarId);
             // When:
             Throwable throwable = catchThrowable(() -> jarService.deleteJarByIdOrThrow(jarId));
             // Then:
@@ -160,7 +159,7 @@ public class JarServiceTests {
         }
 
         @Test
-        public void given_deleteBy_idAndBudgetId_when_jar_found_then_no_exception() {
+        void given_deleteBy_idAndBudgetId_when_jar_found_then_no_exception() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
@@ -175,7 +174,7 @@ public class JarServiceTests {
         }
 
         @Test
-        public void given_deleteBy_idAndBudgetId_when_jar_not_found_then_throw() {
+        void given_deleteBy_idAndBudgetId_when_jar_not_found_then_throw() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
@@ -193,7 +192,7 @@ public class JarServiceTests {
     @Nested
     class SearchTests {
         @Test
-        public void given_findAll_by_budgetId_when_jars_not_found_then_return_empty_page() {
+        void given_findAll_by_budgetId_when_jars_not_found_then_return_empty_page() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             ArrayList<Jar> jarList = new ArrayList<>();
@@ -206,12 +205,12 @@ public class JarServiceTests {
             // Then:
             assertThat(pageWithJars.getItems()).isEmpty();
             assertThat(pageWithJars.getMeta()).isNotNull();
-            assertThat(pageWithJars.getMeta().getElements()).isEqualTo(0);
-            assertThat(pageWithJars.getMeta().getTotalElements()).isEqualTo(0);
+            assertThat(pageWithJars.getMeta().getElements()).isZero();
+            assertThat(pageWithJars.getMeta().getTotalElements()).isZero();
         }
 
         @Test
-        public void given_findAll_by_budgetId_when_jars_found_then_return_page() {
+        void given_findAll_by_budgetId_when_jars_found_then_return_page() {
             // Given:
             List<Jar> jarList = new ArrayList<>(2);
             jarList.add(new Jar().setId(UUID.randomUUID().toString()));
@@ -231,7 +230,7 @@ public class JarServiceTests {
         }
 
         @Test
-        public void given_findJar_when_jar_found_then_returned() {
+        void given_findJar_when_jar_found_then_returned() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();
@@ -248,7 +247,7 @@ public class JarServiceTests {
         }
 
         @Test
-        public void given_findJar_when_jar_not_found_then_throw() {
+        void given_findJar_when_jar_not_found_then_throw() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String jarId = UUID.randomUUID().toString();

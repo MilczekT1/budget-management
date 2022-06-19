@@ -12,7 +12,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import pl.konradboniecki.budget.budgetmanagement.controller.ExpenseController;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.commons.SharedData;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.security.Security;
 import pl.konradboniecki.budget.budgetmanagement.feature.expense.ExpenseMapper;
@@ -51,7 +50,7 @@ public class ExpenseSteps {
                     .comment(expense.getComment());
             HttpEntity<OASExpenseCreation> entity = new HttpEntity<>(expenseCreation, security.getSecurityHeaders());
             ResponseEntity<OASExpense> responseEntity = testRestTemplate
-                    .exchange(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses", HttpMethod.POST, entity, OASExpense.class, expense.getBudgetId());
+                    .exchange("/api/budget-mgt/v1/budgets/{budgetId}/expenses", HttpMethod.POST, entity, OASExpense.class, expense.getBudgetId());
             assertThat(responseEntity.getBody()).isNotNull();
             OASExpense exp = responseEntity.getBody();
             sharedData.setLastResponseEntity(responseEntity);
@@ -65,7 +64,7 @@ public class ExpenseSteps {
         OASExpense expense = sharedData.getCommentToExpenseMap().getOrDefault(comment, generateExpense(whichBudget));
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
         ResponseEntity<OASExpense> responseEntity = testRestTemplate
-                .exchange(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", HttpMethod.DELETE, entity, OASExpense.class, expense.getBudgetId(), expense.getId());
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", HttpMethod.DELETE, entity, OASExpense.class, expense.getBudgetId(), expense.getId());
         sharedData.setLastResponseEntity(responseEntity);
     }
 
@@ -87,7 +86,7 @@ public class ExpenseSteps {
         OASExpense expense = sharedData.getCommentToExpenseMap().getOrDefault(comment, generateExpense(whichBudget));
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
         ResponseEntity<OASExpense> responseEntity = testRestTemplate
-                .exchange(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", HttpMethod.GET, entity, OASExpense.class, expense.getBudgetId(), expense.getId());
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", HttpMethod.GET, entity, OASExpense.class, expense.getBudgetId(), expense.getId());
         sharedData.setLastResponseEntity(responseEntity);
     }
 
@@ -102,7 +101,7 @@ public class ExpenseSteps {
         HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
 
         ResponseEntity<OASExpensePage> responseEntity = testRestTemplate
-                .exchange(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses", HttpMethod.GET, entity,
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}/expenses", HttpMethod.GET, entity,
                         OASExpensePage.class, budgetId);
         sharedData.setLastResponseEntity(responseEntity);
     }
@@ -133,7 +132,7 @@ public class ExpenseSteps {
         responseStatusCodeEquals(HttpStatus.OK);
         OASExpensePage expenseList = (OASExpensePage) sharedData.getLastResponseEntity().getBody();
         assertThat(expenseList).isNotNull();
-        assertThat(expenseList.getItems().size()).isEqualTo(0);
+        assertThat(expenseList.getItems()).isEmpty();
     }
 
     @When("I update expense with comment (.+) by id from (my|random) budget with properties:$")
@@ -150,7 +149,7 @@ public class ExpenseSteps {
         String budgetId = myOrRandomBudgetId(whichBudget);
         HttpEntity<OASExpenseModification> entity = new HttpEntity<>(expenseModification, security.getSecurityHeaders());
         ResponseEntity<OASExpense> responseEntity = testRestTemplate
-                .exchange(ExpenseController.BASE_PATH + "/budgets/{budgetId}/expenses/{expenseId}", HttpMethod.PUT, entity, OASExpense.class, budgetId, newExpense.getId());
+                .exchange("/api/budget-mgt/v1/budgets/{budgetId}/expenses/{expenseId}", HttpMethod.PUT, entity, OASExpense.class, budgetId, newExpense.getId());
         sharedData.setLastResponseEntity(responseEntity);
     }
 
@@ -192,6 +191,6 @@ public class ExpenseSteps {
     @And("response contains {int} expenses")
     public void responseContainsExpenses(int amountOfExpenses) {
         OASExpensePage expenseList = (OASExpensePage) sharedData.getLastResponseEntity().getBody();
-        assertThat(expenseList.getItems().size()).isEqualTo(amountOfExpenses);
+        assertThat(expenseList.getItems()).hasSize(amountOfExpenses);
     }
 }
