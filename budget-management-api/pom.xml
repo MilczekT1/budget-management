@@ -5,6 +5,7 @@
     <parent>
         <groupId>pl.konradboniecki.budget</groupId>
         <artifactId>budget-management-pom</artifactId>
+
         <version>0.8.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
