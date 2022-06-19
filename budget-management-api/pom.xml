@@ -5,13 +5,13 @@
     <parent>
         <groupId>pl.konradboniecki.budget</groupId>
         <artifactId>budget-management-pom</artifactId>
-        <version>0.8.0-SNAPSHOT</version>
+        <version>0.8.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.konradboniecki.budget</groupId>
     <artifactId>budget-management-api</artifactId>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>0.8.0</version>
 
     <dependencyManagement>
         <dependencies>
