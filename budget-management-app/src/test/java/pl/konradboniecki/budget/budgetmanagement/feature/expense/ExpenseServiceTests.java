@@ -36,7 +36,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         webEnvironment = WebEnvironment.NONE,
         properties = "spring.cloud.config.enabled=false"
 )
-public class ExpenseServiceTests {
+class ExpenseServiceTests {
 
     @MockBean
     private ExpenseRepository expenseRepository;
@@ -48,7 +48,7 @@ public class ExpenseServiceTests {
     @Nested
     class DeletionTests {
         @Test
-        public void given_deleteBy_idAndBudgetId_when_expense_found_then_do_nothing() {
+        void given_deleteBy_idAndBudgetId_when_expense_found_then_do_nothing() {
             // Given:
             String randomBudgetId = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -65,7 +65,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_deleteBy_idAndBudgetId_when_expense_not_found_then_throw() {
+        void given_deleteBy_idAndBudgetId_when_expense_not_found_then_throw() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -82,7 +82,7 @@ public class ExpenseServiceTests {
     @Nested
     class ModificationTests {
         @Test
-        public void given_different_budgetId_in_body_and_path_when_update_then_throw() {
+        void given_different_budgetId_in_body_and_path_when_update_then_throw() {
             // Given:
             String budgetIdFromExpense = UUID.randomUUID().toString();
             String budgetIdFromPath = UUID.randomUUID().toString();
@@ -100,7 +100,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_the_same_budgetId_in_body_and_path_when_update_then_return_expense() {
+        void given_the_same_budgetId_in_body_and_path_when_update_then_return_expense() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -125,7 +125,7 @@ public class ExpenseServiceTests {
     @Nested
     class CreationTests {
         @Test
-        public void given_valid_params_when_save_then_return_expense() {
+        void given_valid_params_when_save_then_return_expense() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             OASExpenseCreation expenseCreation = new OASExpenseCreation()
@@ -140,7 +140,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_missing_body_when_save_then_throw() {
+        void given_missing_body_when_save_then_throw() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             when(expenseRepository.save(any(Expense.class))).thenReturn(new Expense());
@@ -153,7 +153,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_different_budgetId_in_body_and_path_when_save_then_throw() {
+        void given_different_budgetId_in_body_and_path_when_save_then_throw() {
             // Given:
             String budgetIdFromBody = UUID.randomUUID().toString();
             String budgetIdFromPath = UUID.randomUUID().toString();
@@ -169,7 +169,7 @@ public class ExpenseServiceTests {
     @Nested
     class SearchTests {
         @Test
-        public void given_findBy_idAndBudgetId_when_expense_found_then_returned() {
+        void given_findBy_idAndBudgetId_when_expense_found_then_returned() {
             // Given:
             String randomUUID = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -189,7 +189,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_findBy_idAndBudgetId_when_expense_not_found_then_throw() {
+        void given_findBy_idAndBudgetId_when_expense_not_found_then_throw() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             String expenseId = UUID.randomUUID().toString();
@@ -205,7 +205,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_findBy_idAndBudgetId_when_budget_not_found_then_throw() {
+        void given_findBy_idAndBudgetId_when_budget_not_found_then_throw() {
             // Given:
             String budgetId = UUID.randomUUID().toString();
             when(budgetRepository.findById(budgetId))
@@ -218,7 +218,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_findAll_by_budgetId_when_expenses_not_found_then_return_empty_items() {
+        void given_findAll_by_budgetId_when_expenses_not_found_then_return_empty_items() {
             // Given:
             ArrayList<Expense> expenseList = new ArrayList<>();
             Pageable pageable = PageRequest.of(0, 100);
@@ -226,7 +226,7 @@ public class ExpenseServiceTests {
             String randomBudgetId = UUID.randomUUID().toString();
             when(budgetRepository.findById(randomBudgetId))
                     .thenReturn(Optional.of(new Budget().setId(randomBudgetId)));
-            when(expenseRepository.findAllByBudgetId(eq(randomBudgetId), eq(pageable)))
+            when(expenseRepository.findAllByBudgetId(randomBudgetId, pageable))
                     .thenReturn(page);
             // When:
             OASExpensePage pageWithExpenses = expenseService.findAllExpensesByBudgetId(randomBudgetId, pageable);
@@ -235,7 +235,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_findAll_by_budgetId_when_budget_not_found_then_throw() {
+        void given_findAll_by_budgetId_when_budget_not_found_then_throw() {
             // Given:
             ArrayList<Expense> expenseList = new ArrayList<>();
             Pageable pageable = PageRequest.of(0, 100);
@@ -243,7 +243,7 @@ public class ExpenseServiceTests {
             String randomBudgetId = UUID.randomUUID().toString();
             when(budgetRepository.findById(randomBudgetId))
                     .thenReturn(Optional.empty());
-            when(expenseRepository.findAllByBudgetId(eq(randomBudgetId), eq(pageable)))
+            when(expenseRepository.findAllByBudgetId(randomBudgetId, pageable))
                     .thenReturn(page);
             // When:
             Throwable throwable = catchThrowable(() -> expenseService.findAllExpensesByBudgetId(randomBudgetId, pageable));
@@ -252,7 +252,7 @@ public class ExpenseServiceTests {
         }
 
         @Test
-        public void given_findAll_by_budgetId_when_expenses_found_then_return_items() {
+        void given_findAll_by_budgetId_when_expenses_found_then_return_items() {
             // Given:
             String randomBudgetId = UUID.randomUUID().toString();
             ArrayList<Expense> expenseList = new ArrayList<>();
@@ -262,12 +262,12 @@ public class ExpenseServiceTests {
             Page<Expense> page = new PageImpl<>(expenseList, pageable, 0);
             when(budgetRepository.findById(randomBudgetId))
                     .thenReturn(Optional.of(new Budget().setId(randomBudgetId)));
-            when(expenseRepository.findAllByBudgetId(eq(randomBudgetId), eq(pageable)))
+            when(expenseRepository.findAllByBudgetId(randomBudgetId, pageable))
                     .thenReturn(page);
             // When:
             OASExpensePage pageWithExpenses = expenseService.findAllExpensesByBudgetId(randomBudgetId, pageable);
             // Then:
-            assertThat(pageWithExpenses.getItems().size()).isEqualTo(2L);
+            assertThat(pageWithExpenses.getItems()).hasSize(2);
             pageWithExpenses.getItems().forEach((expense) -> assertThat(expense.getBudgetId()).isEqualTo(randomBudgetId));
         }
     }

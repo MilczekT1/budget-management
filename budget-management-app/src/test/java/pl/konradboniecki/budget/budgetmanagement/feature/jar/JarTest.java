@@ -11,10 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class JarTest {
+class JarTest {
 
     @Test
-    public void set_amount_greater_than_capacity_should_set_status_completed() {
+    void set_amount_greater_than_capacity_should_set_status_completed() {
         // Given:
         Jar jar = new Jar().setCapacity(10.0);
         // When:
@@ -24,7 +24,7 @@ public class JarTest {
     }
 
     @Test
-    public void set_amount_equal_to_capacity_should_set_status_completed() {
+    void set_amount_equal_to_capacity_should_set_status_completed() {
         // Given:
         Jar jar = new Jar().setCapacity(10.0);
         // When:
@@ -34,7 +34,7 @@ public class JarTest {
     }
 
     @Test
-    public void set_amount_lower_than_capacity_should_set_status_IN_PROGRESS() {
+    void set_amount_lower_than_capacity_should_set_status_IN_PROGRESS() {
         // Given:
         Jar jar = new Jar().setCapacity(10.0);
         // When:
@@ -44,7 +44,7 @@ public class JarTest {
     }
 
     @Test
-    public void default_status_is_NOT_STARTED() {
+    void default_status_is_NOT_STARTED() {
         // When:
         Jar jar = new Jar();
         // Then:
@@ -52,7 +52,7 @@ public class JarTest {
     }
 
     @Test
-    public void merge_populates_all_properties_if_not_null() {
+    void merge_populates_all_properties_if_not_null() {
         // Given:
         Jar jar = new Jar()
                 .setId(UUID.randomUUID().toString())
@@ -80,7 +80,7 @@ public class JarTest {
     }
 
     @Test
-    public void merge_does_not_populate_properties_if_null() {
+    void merge_does_not_populate_properties_if_null() {
         // Given:
         Jar jar = new Jar()
                 .setId(UUID.randomUUID().toString())
@@ -108,18 +108,18 @@ public class JarTest {
     }
 
     @Test
-    public void merge_throws_NPE_if_jar_is_null() {
+    void merge_throws_NPE_if_jar_is_null() {
         // Given:
         Jar firstJar = new Jar();
         // When:
         Throwable throwable = catchThrowable(() -> firstJar.mergeWith(null));
         // Then:
-        assertThat(throwable).isNotNull();
-        assertThat(throwable).isInstanceOf(NullPointerException.class);
+        assertThat(throwable).isNotNull()
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    public void setting_currentAmount_changes_status() {
+    void setting_currentAmount_changes_status() {
         // Given:
         Jar firstJar = new Jar()
                 .setCapacity(5.0)
@@ -132,7 +132,7 @@ public class JarTest {
     }
 
     @Test
-    public void setting_capacity_changes_status() {
+    void setting_capacity_changes_status() {
         // Given:
         Jar firstJar = new Jar()
                 .setCurrentAmount(6.0)
@@ -145,7 +145,7 @@ public class JarTest {
     }
 
     @Test
-    public void setting_capacity_to_negative_changes_status_to_NOT_STARTED() {
+    void setting_capacity_to_negative_changes_status_to_NOT_STARTED() {
         // Given:
         Jar firstJar = new Jar()
                 .setCurrentAmount(6.0)
@@ -163,7 +163,7 @@ public class JarTest {
     }
 
     @Test
-    public void when_capacity_gt_currentAmount_then_status_is_IN_PROGRESS() {
+    void when_capacity_gt_currentAmount_then_status_is_IN_PROGRESS() {
         // Given:
         Jar jar = new Jar();
         // When:
@@ -174,7 +174,7 @@ public class JarTest {
     }
 
     @Test
-    public void when_capacity_lt_currentAmount_then_status_is_COMPLETED() {
+    void when_capacity_lt_currentAmount_then_status_is_COMPLETED() {
         // Given:
         Jar jar = new Jar();
         // When:
@@ -185,7 +185,7 @@ public class JarTest {
     }
 
     @Test
-    public void when_capacity_is_null_then_status_is_NOT_STARTED() {
+    void when_capacity_is_null_then_status_is_NOT_STARTED() {
         // Given:
         Jar jar = new Jar();
         // When:
@@ -196,7 +196,7 @@ public class JarTest {
     }
 
     @Test
-    public void when_currentAmount_is_null_then_status_is_NOT_STARTED() {
+    void when_currentAmount_is_null_then_status_is_NOT_STARTED() {
         // Given:
         Jar jar = new Jar();
         // When:
@@ -207,7 +207,7 @@ public class JarTest {
     }
 
     @Test
-    public void when_capacity_is_lt_zero_then_status_is_NOT_STARTED() {
+    void when_capacity_is_lt_zero_then_status_is_NOT_STARTED() {
         // Given:
         Jar jar = new Jar();
         // When:
@@ -218,7 +218,7 @@ public class JarTest {
     }
 
     @Test
-    public void when_capacity_is_equal_to_zero_then_status_is_NOT_STARTED() {
+    void when_capacity_is_equal_to_zero_then_status_is_NOT_STARTED() {
         // Given:
         Jar jar = new Jar();
         // When:
