@@ -16,3 +16,6 @@ spring:
     user:
       name: "testUserName"
       password: "testUserPassword"
+  mongodb:
+    embedded:
+      version: 4.4.1
