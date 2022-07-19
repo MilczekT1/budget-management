@@ -1,5 +1,6 @@
 FROM konradboniecki/budget:java-base-image-latest
-
+COPY ../.circleci/java-cert-importer.sh .
+RUN sudo ./java-cert-importer.sh konradboniecki.com.pl
 WORKDIR	/tests
 COPY target/cucumber-tests.jar ./tests.jar
 COPY "target/acceptance-tests-lib/*" "/classpath/"
