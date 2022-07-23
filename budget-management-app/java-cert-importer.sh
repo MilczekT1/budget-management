@@ -4,10 +4,10 @@
 set -e
 
 # Ensure script is running as root
-if [ "$EUID" -ne 0 ]
-  then echo "WARN: Please run as root (sudo)"
-  exit 1
-fi
+#if [ "$EUID" -ne 0 ]
+#  then echo "WARN: Please run as root (sudo)"
+#  exit 1
+#fi
 
 # Check required commands
 command -v openssl >/dev/null 2>&1 || { echo "Required command 'openssl' not installed. Aborting." >&2; exit 1; }
