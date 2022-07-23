@@ -1,12 +1,12 @@
 FROM konradboniecki/budget:java-base-image-latest
 
-COPY java-cert-importer.sh .
-RUN sh ./java-cert-importer.sh konradboniecki.com.pl
+#COPY java-cert-importer.sh .
+#RUN sh ./java-cert-importer.sh konradboniecki.com.pl
 
-#COPY ../.circleci/certificate.cer $JAVA_HOME/jre/lib/security
-#RUN \
-#    cd $JAVA_HOME/jre/lib/security \
-#    && keytool -keystore cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias mycert -file certificate.cer
+COPY certificate.cer $JAVA_HOME/jre/lib/security
+RUN \
+    cd $JAVA_HOME/jre/lib/security \
+    && keytool -keystore cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias mycert -file certificate.cer
 
 WORKDIR	/tests
 COPY target/cucumber-tests.jar ./tests.jar
