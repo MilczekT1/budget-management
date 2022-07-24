@@ -25,6 +25,7 @@ ENTRYPOINT [ \
     "java", "-Djava.security.egd=file:/dev/./urandom", \
     "-Dspring.profiles.active=acceptance-tests", \
     "-Dencrypt.key=${CONFIG_ENCRYPT_KEY}", \
+    "-Dcom.sun.security.enableAIAcaIssuers=true", \
     "-classpath", "/classpath/*:/features/*:tests.jar", \
     "io.cucumber.core.cli.Main", \
     "--glue", "pl.konradboniecki.budget.budgetmanagement.cucumber", "/features"]
