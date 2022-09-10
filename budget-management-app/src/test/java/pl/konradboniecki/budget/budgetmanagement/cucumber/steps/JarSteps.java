@@ -46,11 +46,13 @@ public class JarSteps {
             HttpEntity<OASJarCreation> entity = new HttpEntity<>(jarCreation, security.getSecurityHeaders());
             ResponseEntity<OASJar> responseEntity = testRestTemplate
                     .exchange("/api/budget-mgt/v1/budgets/{budgetId}/jars", HttpMethod.POST, entity, OASJar.class, jar.getBudgetId());
-            assertThat(responseEntity.getBody()).isNotNull();
-            OASJar savedJar = responseEntity.getBody();
+            if (!responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                assertThat(responseEntity.getBody()).isNotNull();
+                OASJar savedJar = responseEntity.getBody();
+                sharedData.addJarNameToJarEntry(savedJar.getJarName(), savedJar);
+                sharedData.addJarIdToBudgetIdEntry(savedJar.getId(), jar.getBudgetId());
+            }
             sharedData.setLastResponseEntity(responseEntity);
-            sharedData.addJarNameToJarEntry(savedJar.getJarName(), savedJar);
-            sharedData.addJarIdToBudgetIdEntry(savedJar.getId(), jar.getBudgetId());
         });
     }
 

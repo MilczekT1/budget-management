@@ -103,9 +103,11 @@ public class BudgetSteps {
         HttpEntity<?> entity = new HttpEntity<>(budgetToSave, security.getSecurityHeaders());
         ResponseEntity<OASBudget> responseEntity = testRestTemplate
                 .exchange("/api/budget-mgt/v1/budgets", HttpMethod.POST, entity, OASBudget.class);
+        if (!responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+            assertThat(responseEntity.getBody()).isNotNull();
+            sharedData.addBudgetIdToDelete(responseEntity.getBody().getId());
+        }
         sharedData.setLastResponseEntity(responseEntity);
-        assertThat(responseEntity.getBody()).isNotNull();
-        sharedData.addBudgetIdToDelete(responseEntity.getBody().getId());
     }
 
     @Then("budget is created")
@@ -141,7 +143,7 @@ public class BudgetSteps {
     public void iDeleteABudgetFor_family(String familyName) {
         String familyId = sharedData.getFamilyIdForName(familyName);
         OASBudget bgt = findBudgetByFamilyId(familyId);
-        if (bgt.getId() != null) {
+        if (bgt != null && bgt.getId() != null) {
             HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
             ResponseEntity<?> responseEntity = testRestTemplate
                     .exchange("/api/budget-mgt/v1/budgets/{budgetId}", HttpMethod.DELETE, entity, OASBudget.class, bgt.getId());

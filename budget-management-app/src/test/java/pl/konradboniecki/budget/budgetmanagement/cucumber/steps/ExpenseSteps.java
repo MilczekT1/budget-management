@@ -51,11 +51,13 @@ public class ExpenseSteps {
             HttpEntity<OASExpenseCreation> entity = new HttpEntity<>(expenseCreation, security.getSecurityHeaders());
             ResponseEntity<OASExpense> responseEntity = testRestTemplate
                     .exchange("/api/budget-mgt/v1/budgets/{budgetId}/expenses", HttpMethod.POST, entity, OASExpense.class, expense.getBudgetId());
-            assertThat(responseEntity.getBody()).isNotNull();
-            OASExpense exp = responseEntity.getBody();
+            if (!responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                assertThat(responseEntity.getBody()).isNotNull();
+                OASExpense exp = responseEntity.getBody();
+                sharedData.addExpenseIdToBudgetIdEntry(exp.getId(), expense.getBudgetId());
+                sharedData.addCommentToExpenseEntry(exp.getComment(), exp);
+            }
             sharedData.setLastResponseEntity(responseEntity);
-            sharedData.addExpenseIdToBudgetIdEntry(exp.getId(), expense.getBudgetId());
-            sharedData.addCommentToExpenseEntry(exp.getComment(), exp);
         });
     }
 
