@@ -201,7 +201,10 @@ public class BudgetSteps {
     private void responseStatusCodeEquals(HttpStatus httpStatus) {
         HttpStatus lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
         if (!lastResponseHttpStatus.equals(httpStatus)) {
-            log.error("last failed body: {}", sharedData.getLastResponseEntity().getBody().toString());
+            if (sharedData.getLastResponseEntity().getBody() != null) {
+                log.error("last failed body: {}", sharedData.getLastResponseEntity().getBody().toString());
+            }
+            log.error("last headers: {}", sharedData.getLastResponseEntity().getHeaders());
         }
         assertThat(lastResponseHttpStatus).isEqualTo(httpStatus);
     }
