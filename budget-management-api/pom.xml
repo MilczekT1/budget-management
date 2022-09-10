@@ -6,6 +6,7 @@
         <groupId>pl.konradboniecki</groupId>
         <artifactId>chassis-openapi-parent</artifactId>
         <version>0.3.0</version>
+        <relativePath/>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
