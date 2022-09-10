@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import pl.konradboniecki.chassis.tools.ChassisSecurityBasicAuthHelper;
 
+import java.util.Objects;
+
 @Slf4j
 public class SecurityOnDeployment implements Security {
 
@@ -20,6 +22,7 @@ public class SecurityOnDeployment implements Security {
     @Override
     public void basicAuthentication() {
         String baToken = chassisSecurityBasicAuthHelper.getBasicAuthHeaderValue();
+        Objects.requireNonNull(baToken);
         securityHeaders.set(HttpHeaders.AUTHORIZATION, baToken);
     }
 
