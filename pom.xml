@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>pl.konradboniecki</groupId>
-        <artifactId>chassis-settings</artifactId>
-        <version>0.3.1</version>
+        <artifactId>chassis-bom</artifactId>
+        <version>0.3.4</version>
         <relativePath/>
     </parent>
 
