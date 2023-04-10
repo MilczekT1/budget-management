@@ -8,3 +8,5 @@ spring:
     retry.max-attempts: 10
     username: ${CONFIG_SERVER_BA_USERNAME}
     password: ${CONFIG_SERVER_BA_PASSWORD}
+  main:
+    allow-bean-definition-overriding: true

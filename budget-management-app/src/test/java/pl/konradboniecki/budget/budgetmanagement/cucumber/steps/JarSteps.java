@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.commons.SharedData;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.security.Security;
 import pl.konradboniecki.budget.budgetmanagement.feature.jar.JarMapper;
@@ -46,11 +43,12 @@ public class JarSteps {
             HttpEntity<OASJarCreation> entity = new HttpEntity<>(jarCreation, security.getSecurityHeaders());
             ResponseEntity<OASJar> responseEntity = testRestTemplate
                     .exchange("/api/budget-mgt/v1/budgets/{budgetId}/jars", HttpMethod.POST, entity, OASJar.class, jar.getBudgetId());
-            assertThat(responseEntity.getBody()).isNotNull();
-            OASJar savedJar = responseEntity.getBody();
             sharedData.setLastResponseEntity(responseEntity);
-            sharedData.addJarNameToJarEntry(savedJar.getJarName(), savedJar);
-            sharedData.addJarIdToBudgetIdEntry(savedJar.getId(), jar.getBudgetId());
+            if (responseEntity.getBody() != null) {
+                OASJar savedJar = responseEntity.getBody();
+                sharedData.addJarNameToJarEntry(savedJar.getJarName(), savedJar);
+                sharedData.addJarIdToBudgetIdEntry(savedJar.getId(), jar.getBudgetId());
+            }
         });
     }
 
@@ -60,7 +58,7 @@ public class JarSteps {
     }
 
     private void responseStatusCodeEquals(HttpStatus httpStatus) {
-        HttpStatus lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
+        HttpStatusCode lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
         assertThat(lastResponseHttpStatus).isEqualTo(httpStatus);
     }
 
