@@ -5,17 +5,13 @@ budget:
 spring:
   main:
     lazy-initialization: true
+    allow-bean-definition-overriding: true
   profiles:
     active: test
   cloud:
     config:
       enabled: false
-  zipkin:
-    enabled: false
   security:
     user:
       name: "testUserName"
       password: "testUserPassword"
-  mongodb:
-    embedded:
-      version: 4.4.1
