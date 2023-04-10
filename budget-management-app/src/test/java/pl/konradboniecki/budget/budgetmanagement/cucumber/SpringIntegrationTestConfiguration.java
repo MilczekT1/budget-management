@@ -31,6 +31,7 @@ public class SpringIntegrationTestConfiguration {
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
         final var shouldTurnOffMongo = System.getenv("TEST_CONTAINERS_OFF");
         if ("true".equals(shouldTurnOffMongo)) {
+            log.info("Skipping mongo container init for acceptance tests");
             return;
         }
         mongoDBContainer.start();
