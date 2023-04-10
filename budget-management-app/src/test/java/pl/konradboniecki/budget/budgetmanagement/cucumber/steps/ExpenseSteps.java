@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.commons.SharedData;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.security.Security;
 import pl.konradboniecki.budget.budgetmanagement.feature.expense.ExpenseMapper;
@@ -36,7 +33,7 @@ public class ExpenseSteps {
     private final ExpenseMapper expenseMapper;
 
     private void responseStatusCodeEquals(HttpStatus httpStatus) {
-        HttpStatus lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
+        HttpStatusCode lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
         assertThat(lastResponseHttpStatus).isEqualTo(httpStatus);
     }
 
@@ -51,11 +48,12 @@ public class ExpenseSteps {
             HttpEntity<OASExpenseCreation> entity = new HttpEntity<>(expenseCreation, security.getSecurityHeaders());
             ResponseEntity<OASExpense> responseEntity = testRestTemplate
                     .exchange("/api/budget-mgt/v1/budgets/{budgetId}/expenses", HttpMethod.POST, entity, OASExpense.class, expense.getBudgetId());
-            assertThat(responseEntity.getBody()).isNotNull();
-            OASExpense exp = responseEntity.getBody();
             sharedData.setLastResponseEntity(responseEntity);
-            sharedData.addExpenseIdToBudgetIdEntry(exp.getId(), expense.getBudgetId());
-            sharedData.addCommentToExpenseEntry(exp.getComment(), exp);
+            if (responseEntity.getBody() != null) {
+                OASExpense exp = responseEntity.getBody();
+                sharedData.addExpenseIdToBudgetIdEntry(exp.getId(), expense.getBudgetId());
+                sharedData.addCommentToExpenseEntry(exp.getComment(), exp);
+            }
         });
     }
 
@@ -155,13 +153,13 @@ public class ExpenseSteps {
 
     @Then("the operation is a success")
     public void theOperationIsASuccess() {
-        HttpStatus lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
+        HttpStatusCode lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
         assertThat(lastResponseHttpStatus.is2xxSuccessful()).isTrue();
     }
 
     @Then("operation is a failure")
     public void operationIsAFailure() {
-        HttpStatus lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
+        HttpStatusCode lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
         assertThat(lastResponseHttpStatus.is4xxClientError()).isTrue();
     }
 

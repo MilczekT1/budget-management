@@ -1,11 +1,11 @@
 package pl.konradboniecki.budget.budgetmanagement;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import pl.konradboniecki.chassis.ChassisApplication;
 
 @EnableMongoRepositories
-@SpringBootApplication(scanBasePackages = {"pl.konradboniecki"})
+@ChassisApplication
 public class BudgetManagementApplication {
 
     public static void main(String[] args) {
