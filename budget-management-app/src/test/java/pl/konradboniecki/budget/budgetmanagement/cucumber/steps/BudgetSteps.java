@@ -8,10 +8,7 @@ import io.cucumber.java.en.When;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.commons.SharedData;
 import pl.konradboniecki.budget.budgetmanagement.cucumber.security.Security;
 import pl.konradboniecki.budget.budgetmanagement.feature.budget.Budget;
@@ -104,8 +101,9 @@ public class BudgetSteps {
         ResponseEntity<OASBudget> responseEntity = testRestTemplate
                 .exchange("/api/budget-mgt/v1/budgets", HttpMethod.POST, entity, OASBudget.class);
         sharedData.setLastResponseEntity(responseEntity);
-        assertThat(responseEntity.getBody()).isNotNull();
-        sharedData.addBudgetIdToDelete(responseEntity.getBody().getId());
+        if (responseEntity.getBody() != null) {
+            sharedData.addBudgetIdToDelete(responseEntity.getBody().getId());
+        }
     }
 
     @Then("budget is created")
@@ -115,7 +113,7 @@ public class BudgetSteps {
 
     @Then("budget is not created")
     public void budgetIsNotCreated() {
-        HttpStatus lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
+        HttpStatusCode lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
         assertThat(lastResponseHttpStatus.is4xxClientError()).isTrue();
     }
 
@@ -141,7 +139,7 @@ public class BudgetSteps {
     public void iDeleteABudgetFor_family(String familyName) {
         String familyId = sharedData.getFamilyIdForName(familyName);
         OASBudget bgt = findBudgetByFamilyId(familyId);
-        if (bgt.getId() != null) {
+        if (bgt != null && bgt.getId() != null) {
             HttpEntity<?> entity = new HttpEntity<>(null, security.getSecurityHeaders());
             ResponseEntity<?> responseEntity = testRestTemplate
                     .exchange("/api/budget-mgt/v1/budgets/{budgetId}", HttpMethod.DELETE, entity, OASBudget.class, bgt.getId());
@@ -197,7 +195,7 @@ public class BudgetSteps {
     }
 
     private void responseStatusCodeEquals(HttpStatus httpStatus) {
-        HttpStatus lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
+        HttpStatusCode lastResponseHttpStatus = sharedData.getLastResponseEntity().getStatusCode();
         assertThat(lastResponseHttpStatus).isEqualTo(httpStatus);
     }
 
