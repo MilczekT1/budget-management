@@ -110,7 +110,7 @@
                     <dependency>
                         <groupId>org.springframework.cloud</groupId>
                         <artifactId>spring-cloud-contract-verifier</artifactId>
-                        <version>${chassis.dependencies.springcloud.version}</version>
+                        <version>${chassis.springcloud.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

@@ -34,8 +34,8 @@
                             <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <library>spring-boot</library>
-                            <apiPackage>${groupId}.openapi.api</apiPackage>
-                            <modelPackage>${groupId}.openapi.dto.model</modelPackage>
+                            <apiPackage>${project.groupId}.openapi.api</apiPackage>
+                            <modelPackage>${project.groupId}.openapi.dto.model</modelPackage>
                             <modelNamePrefix>OAS</modelNamePrefix>
                             <configOptions>
                                 <sourceFolder>src/gen/java/main</sourceFolder>
