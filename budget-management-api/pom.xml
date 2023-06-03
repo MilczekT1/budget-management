@@ -11,7 +11,7 @@
 
     <groupId>pl.konradboniecki.budget</groupId>
     <artifactId>budget-management-api</artifactId>
-    <version>0.9.0</version>
+    <version>0.10.0-SNAPSHOT</version>
 
     <properties>
         <sonar.organization>milczekt1</sonar.organization>
